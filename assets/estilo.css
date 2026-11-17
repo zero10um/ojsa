@@ -139,6 +139,13 @@ a.selo-eixo:hover { color: var(--mata); text-decoration: none; background: var(-
 .mapa-ro path[data-mun]:hover, .mapa-ro path[data-mun]:focus { fill: var(--igapo) !important; outline: none; }
 .mapa-ro .rotulo { font-family: var(--fonte); font-size: 28px; fill: var(--tinta); paint-order: stroke; stroke: #fff; stroke-width: 6px; pointer-events: none; }
 .mapa-ro .rotulo-n { font-weight: 700; }
+.mapa-camada { display: flex; gap: 12px; align-items: flex-start; padding: 10px 14px; margin-bottom: 10px; border-left: 4px solid; font-size: 13px; line-height: 1.45; color: var(--texto); }
+.mapa-camada strong { display: block; color: var(--tinta); font-weight: 500; font-size: 14px; }
+.mapa-camada-marca { width: 14px; height: 14px; flex: none; margin-top: 3px; }
+.camada-comarca { border-color: var(--mata); background: var(--varzea); }
+.camada-comarca .mapa-camada-marca { background: var(--mata); }
+.camada-impacto { border-color: #8C5A22; background: var(--barranco-claro); }
+.camada-impacto .mapa-camada-marca { background: #8C5A22; border-radius: 50%; }
 .mapa-legenda { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 12px; color: var(--cinza); margin-top: 8px; }
 .mapa-legenda span { display: inline-flex; align-items: center; gap: 6px; }
 .mapa-legenda i { width: 14px; height: 14px; display: inline-block; border: 1px solid rgba(0, 0, 0, .08); }

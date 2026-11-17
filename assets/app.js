@@ -154,9 +154,11 @@
     var n = contagemMapa(modo);
     var valores = Object.keys(n).map(function (k) { return n[k]; }).sort(function (a, b) { return a - b; });
     var max = valores[valores.length - 1] || 1;
+    // cores diferentes por camada: verdes para a sede da comarca, terra para o local do impacto
     var tons = ['#C9DED1', '#94BFA5', '#5E9C7A', '#2F6B52', '#1E4A3B'];
+    var TERRA = { pouco: '#D9A55A', muito: '#8C5A22' };
     function tom(v) {
-      if (modo === 'fichas') return v >= 3 ? tons[4] : tons[2];
+      if (modo === 'fichas') return v >= 3 ? TERRA.muito : TERRA.pouco;
       var i = Math.min(4, Math.floor(Math.log(v) / Math.log(max + 1) * 5));
       return tons[i];
     }
@@ -180,17 +182,24 @@
       }
     });
 
-    var legenda, nota;
+    // legenda permanente: diz sempre se a área marcada é a sede da comarca ou o local do impacto territorial
+    var camada, legenda, fora;
     if (modo === 'fichas') {
-      legenda = '<span><i style="background:' + tons[4] + '"></i>3 ou mais decisões</span><span><i style="background:' + tons[2] + '"></i>1 ou 2 decisões</span><span><i style="background:#F3F5F4"></i>Sem decisões no acervo</span>';
+      camada = '<div class="mapa-camada camada-impacto"><span class="mapa-camada-marca" aria-hidden="true"></span><div><strong>Local do impacto territorial</strong>' +
+        '<span>Cada área é o município ou território afetado pelo conflito, conforme o documento da decisão. A marcação é feita no nível do município, sem coordenadas exatas.</span></div></div>';
+      legenda = '<span><i style="background:' + TERRA.muito + '"></i>3 ou mais decisões</span><span><i style="background:' + TERRA.pouco + '"></i>1 ou 2 decisões</span><span><i style="background:#F3F5F4"></i>Sem decisões no acervo</span>';
       var estadual = D.fichas.filter(function (f) { return !f.municipio; }).length;
-      nota = 'Município indicado na fonte da decisão. ' + (estadual ? plural(estadual, 'decisão de abrangência estadual não aparece', 'decisões de abrangência estadual não aparecem') + ' no mapa. ' : '') + 'Limites municipais: IBGE.';
+      fora = estadual ? plural(estadual, 'decisão de abrangência estadual não aparece', 'decisões de abrangência estadual não aparecem') + ' no mapa porque não tem local único de impacto.' : '';
     } else {
+      camada = '<div class="mapa-camada camada-comarca"><span class="mapa-camada-marca" aria-hidden="true"></span><div><strong>Sede da comarca de origem</strong>' +
+        '<span>Cada área é o município sede da comarca em que o processo começou. Não indica onde o conflito ou o impacto ocorreu: uma comarca pode abranger vários municípios.</span></div></div>';
       legenda = '<span><i style="background:' + tons[0] + '"></i>menos processos</span><span><i style="background:' + tons[4] + '"></i>mais processos</span><span><i style="background:#F3F5F4"></i>sem processos ou sem sede de comarca</span>';
-      nota = 'Processos ambientais cíveis do 2º grau por comarca de origem, marcados no município sede. Uma comarca pode abranger mais de um município. Fonte: DataJud (CNJ) e IBGE.';
+      var semLugar = DJ.panorama ? DJ.panorama.porComarca.filter(function (c) { return /protocolado|não identificada/i.test(c.rot); }).reduce(function (s, c) { return s + c.n; }, 0) : 0;
+      fora = semLugar ? plural(semLugar, 'processo protocolado direto no TJRO ou sem comarca identificada não aparece', 'processos protocolados direto no TJRO ou sem comarca identificada não aparecem') + ' no mapa.' : '';
     }
-    return '<figure style="margin:0"><svg class="mapa-ro" viewBox="0 0 ' + MAPA.largura + ' ' + MAPA.altura + '" role="img" aria-label="Mapa de Rondônia por município">' + paths + rotulos + '</svg>' +
-      '<figcaption><div class="mapa-legenda">' + legenda + '</div><p class="mapa-nota">' + nota + '</p></figcaption></figure>';
+    return '<figure style="margin:0">' + camada +
+      '<svg class="mapa-ro" viewBox="0 0 ' + MAPA.largura + ' ' + MAPA.altura + '" role="img" aria-label="Mapa de Rondônia por município: ' + (modo === 'fichas' ? 'local do impacto territorial' : 'sede da comarca de origem') + '">' + paths + rotulos + '</svg>' +
+      '<figcaption><div class="mapa-legenda">' + legenda + '</div><p class="mapa-nota">' + (fora ? fora + ' ' : '') + 'Fonte: ' + (modo === 'fichas' ? 'fichas analíticas do Observatório' : 'DataJud (CNJ)') + '. Limites municipais: IBGE.</p></figcaption></figure>';
   }
 
   function ligarMapa() {
@@ -766,7 +775,7 @@
         painel('Classe processual', 'Classe do processo no 2º grau.', P.porClasse.slice(0, 8)) +
         painel('Assuntos mais frequentes', 'Assuntos da Tabela Processual Unificada. Um processo pode ter vários assuntos.', P.porAssunto.slice(0, 12)) +
         painel('Ano de chegada ao 2º grau', 'Ano em que o recurso ou a ação foi registrado no tribunal.', P.porAno) +
-        painel('Comarca de origem', 'Comarca indicada no número do processo. As 15 com mais processos.', P.porComarca.slice(0, 15)) +
+        painel('Comarca de origem', 'Sede da comarca em que o processo começou, indicada no número do processo. Não é o local do impacto do conflito. As 15 com mais processos.', P.porComarca.slice(0, 15)) +
         (P.porResultado ? painel('Resultado dos julgamentos', 'Último resultado de julgamento registrado no DataJud, entre os ' + milhar(P.julgados) + ' processos cíveis já julgados.', P.porResultado.slice(0, 10)) : '') +
       '</div>' : semDataJud();
 
@@ -803,7 +812,7 @@
       '<div class="miolo"><div class="duas">' +
         '<section><div class="secao-cabeca"><h2>Eixos temáticos</h2></div>' + listaEixos() + '</section>' +
         '<section><div class="secao-cabeca"><h2>Mapa</h2></div>' +
-          (DJ.panorama ? '<div class="alternar" role="group" aria-label="O que o mapa mostra"><button type="button" data-modo="datajud">Processos no DataJud</button><button type="button" data-modo="fichas">Acervo analisado</button></div>' : '') +
+          (DJ.panorama ? '<div class="alternar" role="group" aria-label="O que o mapa mostra"><button type="button" data-modo="datajud">Sede da comarca (processos do DataJud)</button><button type="button" data-modo="fichas">Local do impacto (fichas analíticas)</button></div>' : '') +
           '<div id="mapa-temas"></div><div id="barras-temas" style="margin-top:20px"></div>' +
         '</section>' +
       '</div></div>';
@@ -813,8 +822,8 @@
       document.getElementById('mapa-temas').innerHTML = mapa(m);
       [].forEach.call(main.querySelectorAll('.alternar button'), function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-modo') === m ? 'true' : 'false'); });
       document.getElementById('barras-temas').innerHTML = m === 'fichas'
-        ? '<h3 style="margin-bottom:8px">Decisões por local</h3>' + barras(contar(D.fichas, function (f) { return f.municipio ? f.municipio.nome : 'Abrangência estadual'; }))
-        : '<h3 style="margin-bottom:8px">Comarcas com mais processos</h3>' + barras(DJ.panorama.porComarca.slice(0, 10));
+        ? '<h3 style="margin-bottom:8px">Decisões por local do impacto</h3>' + barras(contar(D.fichas, function (f) { return f.municipio ? f.municipio.nome : 'Abrangência estadual'; }))
+        : '<h3 style="margin-bottom:8px">Comarcas de origem com mais processos</h3>' + barras(DJ.panorama.porComarca.slice(0, 10));
       ligarMapa();
     }
     [].forEach.call(main.querySelectorAll('.alternar button'), function (b) { b.addEventListener('click', function () { desenhar(b.getAttribute('data-modo')); }); });
