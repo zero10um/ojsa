@@ -219,33 +219,49 @@
     }).join('') + '</ul>';
   }
 
+  // Em pauta: notícias e atos com data, fonte e link (assets/pauta.js)
+  function pauta() { return (window.OJSA_PAUTA || []).slice().sort(function (a, b) { return b.ordem.localeCompare(a.ordem); }); }
+  function itemPauta(p) {
+    var externo = !/^#/.test(p.link);
+    return '<li class="pauta-item"><div class="pauta-meta"><time>' + esc(p.quando) + '</time><span class="pauta-fonte">' + esc(p.fonte) + '</span></div>' +
+      '<div><h3>' + esc(p.titulo) + '</h3><p>' + esc(p.texto) + '</p>' +
+      '<a href="' + esc(p.link) + '"' + (externo ? ' target="_blank" rel="noopener"' : '') + '>' + esc(p.rotuloLink) + (externo ? ' (abre a fonte)' : '') + '</a></div></li>';
+  }
+  function telaPauta() {
+    main.innerHTML =
+      faixa('Em pauta', 'Notícias, decisões e atos sobre justiça socioambiental na Amazônia, cada um com data, fonte e link para a origem.', '<a href="#/radar">Radar Jurisprudencial</a> / Em pauta') +
+      '<div class="miolo"><ul class="pauta">' + pauta().map(itemPauta).join('') + '</ul>' +
+      '<p class="nota" style="margin-top:18px">Só entram nesta página itens que podem ser conferidos na fonte indicada. Notícias de terceiros são resumidas e não substituem o texto original.</p></div>';
+  }
+
   // ---------- telas ----------
   function telaInicio() {
-    var recentes = D.fichas.slice().sort(porData).slice(0, 5);
+    var recentes = D.fichas.slice().sort(porData).slice(0, 4);
     var P = DJ.panorama;
+    var municipios = {};
+    D.fichas.forEach(function (f) { if (f.municipio) municipios[f.municipio.id] = 1; });
 
     main.innerHTML =
       faixa('Territórios, Direito e Justiça na Amazônia.',
         'Justiça socioambiental na Amazônia em dados e contextos.', '',
-        '<form class="busca" role="search" id="busca-inicio"><label for="q-inicio" class="pular">Buscar processos</label>' +
-        '<input id="q-inicio" type="search" placeholder="Número do processo, assunto, comarca ou gabinete"><button type="submit">Buscar</button></form>', 'faixa-inicio') +
+        '<p class="faixa-frase">Um observatório de pesquisa que reúne, classifica e explica as decisões do Tribunal de Justiça de Rondônia sobre conflitos socioambientais: quem é atingido, onde, com quais direitos em jogo e como o Tribunal responde.</p>' +
+        '<p class="faixa-botoes"><a class="botao botao-ouro" href="#/sobre">Conheça o Observatório</a><a class="botao botao-vazado" href="#/temas">Explore os conflitos</a></p>', 'faixa-inicio') +
 
       '<div class="miolo">' +
-        (P ? '<section class="secao"><div class="secao-cabeca"><h2>Processos ambientais no TJRO</h2><a href="#/processos">Consultar todos os ' + milhar(P.civeis) + ' processos</a></div>' +
-          '<div class="destaques">' +
-            '<div><b>' + milhar(P.civeis) + '</b><span>processos cíveis com assunto ambiental no 2º grau</span></div>' +
-            (P.julgados != null ? '<div><b>' + milhar(P.julgados) + '</b><span>com julgamento registrado no DataJud</span></div>' : '<div><b>' + milhar(P.total) + '</b><span>processos ambientais no 2º grau, incluindo criminais</span></div>') +
-            '<div><b>' + milhar(P.porComarca.filter(function (c) { return !/não identificada|originária|protocolado/i.test(c.rot); }).length) + '</b><span>comarcas de origem</span></div>' +
+        '<section class="secao"><div class="secao-cabeca"><h2>Sobre o Observatório</h2><a href="#/sobre">Apresentação completa</a></div>' +
+          '<div class="sobre-resumo">' +
+            '<div><h3>O que é</h3><p>Produto de pesquisa de doutorado do Programa de Pós-Graduação em Direitos Humanos e Desenvolvimento da Justiça (DHJUS) da Universidade Federal de Rondônia.</p></div>' +
+            '<div><h3>O que observa</h3><p>Os acórdãos do TJRO sobre disputas por rios, florestas, terras e áreas protegidas que atingem comunidades e grupos sociais.</p></div>' +
+            '<div><h3>Como trabalha</h3><p>Fontes públicas, triagem documentada e fichas que separam o fato registrado na decisão, a síntese e a interpretação da pesquisa.</p></div>' +
+            '<div><h3>O que não é</h3><p>Não é canal oficial do Tribunal, não avalia magistrados e não orienta o julgamento de processos.</p></div>' +
           '</div>' +
-          '<h3 style="margin:22px 0 4px">Movimentações mais recentes</h3>' + htmlTramitacao(6) +
-          '<p class="mais"><a class="botao" href="#/processos">Consultar e filtrar os processos</a><span class="nota">Atualizado todo dia a partir do DataJud (CNJ).</span></p></section>' : '') +
-
-        '<div class="duas secao">' +
-          '<section><div class="secao-cabeca"><h2>Fichas analíticas</h2><a href="#/decisoes">Ver todas</a></div>' +
-            '<p class="nota">Acórdãos lidos e classificados pela pesquisa: conflito, fundamentos e dimensões de justiça socioambiental.</p>' +
-            '<ul class="lista-decisoes">' + recentes.map(itemDecisao).join('') + '</ul></section>' +
-          '<section><div class="secao-cabeca"><h2>Onde estão os conflitos</h2><a href="#/temas">Temas e Territórios</a></div>' + mapa(P ? 'datajud' : 'fichas') + '</section>' +
-        '</div>' +
+          '<div class="acervo-numeros">' +
+            '<div><b>' + D.fichas.length + '</b><span>fichas analíticas</span></div>' +
+            '<div><b>' + D.eixos.length + '</b><span>eixos temáticos</span></div>' +
+            '<div><b>' + Object.keys(municipios).length + '</b><span>municípios com conflito localizado</span></div>' +
+            '<div><b>' + D.tendencias.length + '</b><span>tendências em observação</span></div>' +
+          '</div>' +
+        '</section>' +
 
         '<section class="secao"><div class="secao-cabeca"><h2>No Radar Jurisprudencial</h2><a href="#/radar/tendencias">Todas as tendências</a></div>' +
           D.tendencias.slice(0, 3).map(function (t) {
@@ -254,15 +270,28 @@
           }).join('') +
         '</section>' +
 
+        '<section class="secao"><div class="secao-cabeca"><h2>Em pauta</h2><a href="#/em-pauta">Tudo em pauta</a></div>' +
+          '<ul class="pauta">' + pauta().slice(0, 4).map(itemPauta).join('') + '</ul>' +
+        '</section>' +
+
+        '<div class="duas secao">' +
+          '<section><div class="secao-cabeca"><h2>Fichas analíticas</h2><a href="#/decisoes">Ver todas</a></div>' +
+            '<p class="nota">Acórdãos lidos e classificados pela pesquisa: conflito, grupos atingidos, fundamentos e dimensões de justiça socioambiental.</p>' +
+            '<ul class="lista-decisoes">' + recentes.map(itemDecisao).join('') + '</ul></section>' +
+          '<section><div class="secao-cabeca"><h2>Onde estão os conflitos</h2><a href="#/temas">Ver as duas camadas</a></div>' + mapa('fichas') + '</section>' +
+        '</div>' +
+
         '<section class="secao"><div class="secao-cabeca"><h2>Eixos temáticos</h2><p>Os eixos saem dos conflitos encontrados no acervo.</p></div>' + listaEixos() + '</section>' +
+
+        (P ? '<section class="secao numeros-tribunal"><div class="secao-cabeca"><h2>O Tribunal em números</h2><a href="#/processos">Consultar os processos</a></div>' +
+          '<div class="destaques">' +
+            '<div><b>' + milhar(P.civeis) + '</b><span>processos cíveis com assunto ambiental no 2º grau</span></div>' +
+            (P.julgados != null ? '<div><b>' + milhar(P.julgados) + '</b><span>com julgamento registrado no DataJud</span></div>' : '<div><b>' + milhar(P.total) + '</b><span>processos ambientais no 2º grau, incluindo criminais</span></div>') +
+            '<div><b>' + milhar(P.porComarca.filter(function (c) { return !/não identificada|originária|protocolado/i.test(c.rot); }).length) + '</b><span>comarcas de origem</span></div>' +
+          '</div>' +
+          '<p class="nota" style="margin-top:12px">Universo quantitativo de apoio, atualizado todo dia a partir da API Pública do DataJud (CNJ). Nem todo processo com assunto ambiental é um conflito socioambiental: a triagem da pesquisa decide quais acórdãos entram na análise.</p></section>' : '') +
       '</div>';
 
-    document.getElementById('busca-inicio').addEventListener('submit', function (e) {
-      e.preventDefault();
-      var q = document.getElementById('q-inicio').value.trim();
-      if (q.replace(/\D/g, '').length === 20) location.hash = '#/processos/' + formatarNumero(q);
-      else location.hash = '#/processos' + (q ? '?q=' + encodeURIComponent(q) : '');
-    });
     ligarMapa();
   }
 
@@ -1059,12 +1088,13 @@
     else if (raiz === 'biblioteca') telaBiblioteca();
     else if (raiz === 'sobre') telaSobre();
     else if (raiz === 'dados') telaDados();
+    else if (raiz === 'em-pauta') telaPauta();
     else if (raiz === 'equipe') telaCadastro();
     else telaNaoEncontrada();
     raizAtual = raiz;
 
     [].forEach.call(document.querySelectorAll('.menu-lista > li'), function (li) {
-      li.classList.toggle('ativo', li.getAttribute('data-rota') === ({ dados: 'biblioteca', processos: 'decisoes' }[raiz] || raiz));
+      li.classList.toggle('ativo', li.getAttribute('data-rota') === ({ dados: 'biblioteca', processos: 'decisoes', 'em-pauta': 'radar' }[raiz] || raiz));
     });
     // transição suave entre páginas
     if (manterRolagem !== true) { main.classList.remove('entrando'); void main.offsetWidth; main.classList.add('entrando'); }

@@ -36,6 +36,16 @@
       <nav id="menu" class="menu" aria-label="Principal">
         <ul class="menu-lista">
           <li data-rota="inicio"><a href="#/">Início</a></li>
+          <li data-rota="sobre" class="tem-sub">
+            <a href="#/sobre">Sobre</a>
+            <ul class="sub">
+              <li><a href="#/sobre/apresentacao">Apresentação</a></li>
+              <li><a href="#/sobre/objetivos">Objetivos</a></li>
+              <li><a href="#/sobre/equipe">Equipe</a></li>
+              <li><a href="#/sobre/metodologia">Metodologia</a></li>
+              <li><a href="#/sobre/privacidade">Privacidade</a></li>
+            </ul>
+          </li>
           <li data-rota="decisoes" class="tem-sub">
             <a href="#/decisoes">Decisões judiciais</a>
             <ul class="sub">
@@ -47,6 +57,7 @@
           <li data-rota="radar" class="tem-sub">
             <a href="#/radar">Radar Jurisprudencial</a>
             <ul class="sub">
+              <li><a href="#/em-pauta">Em pauta</a></li>
               <li><a href="#/radar/novas">Novas decisões</a></li>
               <li><a href="#/radar/tendencias">Tendências em análise</a></li>
               <li><a href="#/radar/divergencias">Entendimentos e divergências</a></li>
@@ -76,16 +87,6 @@
               <li><a href="#/dados">Dados abertos (API)</a></li>
             </ul>
           </li>
-          <li data-rota="sobre" class="tem-sub">
-            <a href="#/sobre">Sobre</a>
-            <ul class="sub">
-              <li><a href="#/sobre/apresentacao">Apresentação</a></li>
-              <li><a href="#/sobre/objetivos">Objetivos</a></li>
-              <li><a href="#/sobre/equipe">Equipe</a></li>
-              <li><a href="#/sobre/metodologia">Metodologia</a></li>
-              <li><a href="#/sobre/privacidade">Privacidade</a></li>
-            </ul>
-          </li>
         </ul>
       </nav>
     </header>
@@ -112,6 +113,7 @@
   <script src="assets/mapa-ro.js"></script>
   <script src="assets/datajud.js" onerror="window.DATAJUD = null"></script>
   <script src="assets/triagem.js" onerror="window.OJSA_TRIAGEM = null"></script>
+  <script src="assets/pauta.js" onerror="window.OJSA_PAUTA = []"></script>
   <script src="assets/app.js"></script>
 </body>
 </html>

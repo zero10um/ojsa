@@ -484,3 +484,34 @@ a.selo-eixo:hover { color: var(--mata); text-decoration: none; background: var(-
 .triagem-pendente h2 { font-size: 15px; margin-bottom: 4px; }
 .triagem-pendente p { margin: 0; font-size: 14px; color: var(--texto); }
 @media (max-width: 600px) { .triagem-itens { grid-template-columns: 1fr; gap: 2px; } .triagem-itens dd { margin-bottom: 8px; } }
+
+/* Página inicial: abertura, Sobre, Em pauta e números do Tribunal */
+.faixa-inicio .faixa-frase { font-size: 17px; color: #fff; max-width: 62ch; margin-top: 18px; line-height: 1.55; }
+.faixa-botoes { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px !important; }
+.botao-ouro { background: #C9A45C; color: #fff; }
+.botao-ouro:hover { background: #B38E46; }
+.botao-vazado { background: transparent; color: #fff; border: 1px solid rgba(255, 255, 255, .7); }
+.botao-vazado:hover { background: rgba(255, 255, 255, .12); }
+.sobre-resumo { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 22px; }
+.sobre-resumo h3 { font-size: 15px; font-weight: 500; color: var(--mata); margin: 0 0 6px; padding-top: 10px; border-top: 3px solid var(--folha); }
+.sobre-resumo p { margin: 0; font-size: 14px; line-height: 1.55; color: var(--texto); }
+.acervo-numeros { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; background: var(--linha); border: 1px solid var(--linha); margin-top: 24px; }
+.acervo-numeros div { background: var(--varzea); padding: 14px 18px; }
+.acervo-numeros b { display: block; font-weight: 300; font-size: 32px; color: var(--mata); line-height: 1.1; }
+.acervo-numeros span { display: block; font-size: 13px; color: var(--texto); margin-top: 4px; }
+.pauta { list-style: none; margin: 0; padding: 0; }
+.pauta-item { display: grid; grid-template-columns: 170px 1fr; gap: 20px; padding: 16px 0; border-bottom: 1px solid var(--linha); }
+.pauta-item:first-child { padding-top: 4px; }
+.pauta-meta time { display: block; font-size: 14px; color: var(--tinta); font-variant-numeric: tabular-nums; }
+.pauta-fonte { display: block; font-size: 12px; color: var(--cinza); margin-top: 3px; line-height: 1.4; }
+.pauta-item h3 { font-size: 16px; font-weight: 500; margin: 0 0 4px; color: var(--tinta); }
+.pauta-item p { margin: 0 0 6px; font-size: 14px; color: var(--texto); line-height: 1.55; }
+.pauta-item a { font-size: 14px; }
+.numeros-tribunal .destaques b { font-size: 32px; }
+@media (max-width: 960px) {
+  .sobre-resumo, .acervo-numeros { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 600px) {
+  .sobre-resumo, .acervo-numeros { grid-template-columns: 1fr; }
+  .pauta-item { grid-template-columns: 1fr; gap: 6px; }
+}
