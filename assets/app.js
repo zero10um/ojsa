@@ -251,7 +251,7 @@
 
     main.innerHTML =
       faixa('Territórios, Direito e Justiça na Amazônia.',
-        'Justiça socioambiental na Amazônia em dados e contextos.', '',
+        'Justiça Socioambiental na Amazônia em dados e contextos', '',
         '<p class="faixa-botoes"><a class="botao botao-ouro" href="#/sobre">Conheça o Observatório</a><a class="botao botao-vazado" href="#/temas">Explore os conflitos</a></p>', 'faixa-inicio') +
 
       '<div class="miolo">' +
