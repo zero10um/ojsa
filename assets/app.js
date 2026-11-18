@@ -53,7 +53,7 @@
 
   function medidor(id) {
     var nivel = ['isolado', 'observacao', 'inicial', 'sustentado'].indexOf(id) + 1;
-    var s = '<span class="medidor" aria-hidden="true">';
+    var s = '<span class="medidor grau-' + id + '" aria-hidden="true">';
     for (var i = 1; i <= 4; i++) s += '<i class="' + (i <= nivel ? 'cheio' : '') + '"></i>';
     return s + '</span>';
   }
@@ -222,16 +222,20 @@
   // Em pauta: notícias e atos com data, fonte e link (assets/pauta.js)
   function pauta() { return (window.OJSA_PAUTA || []).slice().sort(function (a, b) { return b.ordem.localeCompare(a.ordem); }); }
   function itemPauta(p) {
-    var externo = !/^#/.test(p.link);
-    return '<li class="pauta-item"><div class="pauta-meta"><time>' + esc(p.quando) + '</time><span class="pauta-fonte">' + esc(p.fonte) + '</span></div>' +
-      '<div><h3>' + esc(p.titulo) + '</h3><p>' + esc(p.texto) + '</p>' +
-      '<a href="' + esc(p.link) + '"' + (externo ? ' target="_blank" rel="noopener"' : '') + '>' + esc(p.rotuloLink) + (externo ? ' (abre a fonte)' : '') + '</a></div></li>';
+    var capa = p.foto
+      ? '<div class="noticia-capa"><img src="' + esc(p.foto) + '" alt="" loading="lazy" referrerpolicy="no-referrer"><span class="noticia-credito">' + esc(p.credito || '') + '</span></div>'
+      : '<div class="noticia-capa noticia-sem-foto tipo-' + esc(p.tipo || 'imprensa') + '"><span class="noticia-selo">' + (p.tipo === 'justica' ? 'Justiça' : 'Imprensa') + '</span><strong>' + esc(p.fonte) + '</strong></div>';
+    return '<article class="noticia">' + capa +
+      '<div class="noticia-corpo"><p class="noticia-meta"><time>' + esc(p.quando) + '</time> · ' + esc(p.fonte) + '</p>' +
+      '<h3><a href="' + esc(p.link) + '" target="_blank" rel="noopener">' + esc(p.titulo) + '</a></h3>' +
+      '<p>' + esc(p.texto) + '</p>' +
+      '<a class="noticia-link" href="' + esc(p.link) + '" target="_blank" rel="noopener">Ler na fonte</a></div></article>';
   }
   function telaPauta() {
     main.innerHTML =
-      faixa('Em pauta', 'Notícias, decisões e atos sobre justiça socioambiental na Amazônia, cada um com data, fonte e link para a origem.', '<a href="#/radar">Radar Jurisprudencial</a> / Em pauta') +
-      '<div class="miolo"><ul class="pauta">' + pauta().map(itemPauta).join('') + '</ul>' +
-      '<p class="nota" style="margin-top:18px">Só entram nesta página itens que podem ser conferidos na fonte indicada. Notícias de terceiros são resumidas e não substituem o texto original.</p></div>';
+      faixa('Em pauta', 'Notícias sobre conflitos e justiça socioambiental na Amazônia, com data, fonte e link para a matéria original.', '<a href="#/radar">Radar Jurisprudencial</a> / Em pauta') +
+      '<div class="miolo"><div class="pauta-grade">' + pauta().map(itemPauta).join('') + '</div>' +
+      '<p class="nota" style="margin-top:18px">As notícias são resumidas pelo Observatório e não substituem o texto original. Fotos apenas de órgãos públicos, com crédito; as matérias da imprensa aparecem com capa própria.</p></div>';
   }
 
   // ---------- telas ----------
@@ -264,13 +268,13 @@
 
         '<section class="secao"><div class="secao-cabeca"><h2>No Radar Jurisprudencial</h2><a href="#/radar/tendencias">Todas as tendências</a></div>' +
           D.tendencias.slice(0, 3).map(function (t) {
-            return '<article class="tendencia"><div class="tendencia-topo"><h3>' + esc(t.titulo) + '</h3><span class="tendencia-grau">' + medidor(t.grau) + esc(grau(t.grau).nome) + '</span></div>' +
+            return '<article class="tendencia grau-' + t.grau + '"><div class="tendencia-topo"><h3>' + esc(t.titulo) + '</h3><span class="tendencia-grau grau-' + t.grau + '">' + medidor(t.grau) + esc(grau(t.grau).nome) + '</span></div>' +
               '<div class="tendencia-fatos"><span><b>Amostra:</b> ' + plural(t.fichas.length, 'ficha', 'fichas') + '</span><span><b>Órgão:</b> ' + esc(t.orgaos) + '</span><span><b>Período:</b> ' + esc(t.periodo) + '</span></div></article>';
           }).join('') +
         '</section>' +
 
         '<section class="secao"><div class="secao-cabeca"><h2>Em pauta</h2><a href="#/em-pauta">Tudo em pauta</a></div>' +
-          '<ul class="pauta">' + pauta().slice(0, 4).map(itemPauta).join('') + '</ul>' +
+          '<div class="pauta-grade">' + pauta().slice(0, 3).map(itemPauta).join('') + '</div>' +
         '</section>' +
 
         '<div class="duas secao">' +
@@ -733,9 +737,9 @@
             '<ul class="lista-decisoes">' + novas.map(itemDecisao).join('') + '</ul></section>' +
 
           '<section class="modulo" id="tendencias"><h2>Tendências em análise</h2><p class="modulo-desc">Cada tendência informa amostra, órgãos e período, e recebe um grau de evidência. Nenhum tema chegou a entendimento sustentado.</p>' +
-            '<div class="escala">' + D.graus.map(function (g) { return '<div class="escala-passo"><strong>' + medidor(g.id) + esc(g.nome) + '</strong>' + esc(g.def) + '</div>'; }).join('') + '</div>' +
+            '<div class="escala">' + D.graus.map(function (g) { return '<div class="escala-passo grau-' + g.id + '"><strong>' + medidor(g.id) + esc(g.nome) + '</strong>' + esc(g.def) + '</div>'; }).join('') + '</div>' +
             D.tendencias.map(function (t) {
-              return '<article class="tendencia"><div class="tendencia-topo"><h3>' + esc(t.titulo) + '</h3><span class="tendencia-grau">' + medidor(t.grau) + esc(grau(t.grau).nome) + '</span></div>' +
+              return '<article class="tendencia grau-' + t.grau + '"><div class="tendencia-topo"><h3>' + esc(t.titulo) + '</h3><span class="tendencia-grau grau-' + t.grau + '">' + medidor(t.grau) + esc(grau(t.grau).nome) + '</span></div>' +
                 '<div class="tendencia-fatos"><span><b>Amostra:</b> ' + plural(t.fichas.length, 'ficha', 'fichas') + '</span><span><b>Órgãos:</b> ' + esc(t.orgaos) + '</span><span><b>Período:</b> ' + esc(t.periodo) + '</span></div>' +
                 '<p>' + esc(t.descricao) + '</p>' +
                 '<p style="font-size:14px">Fichas: ' + t.fichas.map(function (id) { var f = ficha(id); return '<a href="#/decisoes/' + id + '">' + esc(f.processo || f.titulo) + '</a>'; }).join('; ') + '</p>' +
@@ -851,28 +855,22 @@
 
   // Temas e Territórios
   function telaTemas() {
-    var modo = DJ.panorama ? 'datajud' : 'fichas';
+    var P = DJ.panorama;
     main.innerHTML =
       faixa('Temas e Territórios', 'Os tipos de conflito que chegam ao TJRO e onde eles acontecem. O desmatamento é um tema entre outros; o foco é a resposta do Judiciário aos conflitos.') +
-      '<div class="miolo"><div class="duas">' +
-        '<section><div class="secao-cabeca"><h2>Eixos temáticos</h2></div>' + listaEixos() + '</section>' +
-        '<section><div class="secao-cabeca"><h2>Mapa</h2></div>' +
-          (DJ.panorama ? '<div class="alternar" role="group" aria-label="O que o mapa mostra"><button type="button" data-modo="datajud">Sede da comarca (processos do DataJud)</button><button type="button" data-modo="fichas">Local do impacto (fichas analíticas)</button></div>' : '') +
-          '<div id="mapa-temas"></div><div id="barras-temas" style="margin-top:20px"></div>' +
+      '<div class="miolo">' +
+        '<section class="secao"><div class="secao-cabeca"><h2>Onde os processos começam e onde os conflitos acontecem</h2></div>' +
+          '<p class="mapas-explica">Os dois mapas não medem a mesma coisa. O primeiro conta os processos do DataJud pela <b>sede da comarca</b> em que começaram, uma referência administrativa. O segundo mostra o <b>local do conflito</b> de cada decisão analisada, segundo o documento. Uma comarca pode abranger vários municípios, e o lugar do dano nem sempre coincide com a sede da comarca.</p>' +
+          '<div class="mapas-lado">' +
+            (P ? '<div class="mapa-bloco"><h3 class="mapa-titulo titulo-comarca">Onde os processos começaram</h3>' + mapa('datajud') +
+              '<h4>Comarcas de origem com mais processos</h4>' + barras(P.porComarca.slice(0, 6)) + '</div>' : '') +
+            '<div class="mapa-bloco"><h3 class="mapa-titulo titulo-impacto">Onde está o conflito</h3>' + mapa('fichas') +
+              '<h4>Decisões por local do conflito</h4><div class="barras-terra">' + barras(contar(D.fichas, function (f) { return f.municipio ? f.municipio.nome : 'Abrangência estadual'; })) + '</div></div>' +
+          '</div>' +
         '</section>' +
-      '</div></div>';
-
-    function desenhar(m) {
-      modo = m;
-      document.getElementById('mapa-temas').innerHTML = mapa(m);
-      [].forEach.call(main.querySelectorAll('.alternar button'), function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-modo') === m ? 'true' : 'false'); });
-      document.getElementById('barras-temas').innerHTML = m === 'fichas'
-        ? '<h3 style="margin-bottom:8px">Decisões por local do impacto</h3>' + barras(contar(D.fichas, function (f) { return f.municipio ? f.municipio.nome : 'Abrangência estadual'; }))
-        : '<h3 style="margin-bottom:8px">Comarcas de origem com mais processos</h3>' + barras(DJ.panorama.porComarca.slice(0, 10));
-      ligarMapa();
-    }
-    [].forEach.call(main.querySelectorAll('.alternar button'), function (b) { b.addEventListener('click', function () { desenhar(b.getAttribute('data-modo')); }); });
-    desenhar(modo);
+        '<section class="secao"><div class="secao-cabeca"><h2>Eixos temáticos</h2><p>Os eixos saem dos conflitos encontrados no acervo.</p></div>' + listaEixos() + '</section>' +
+      '</div>';
+    ligarMapa();
   }
 
   function telaTema(id) {
@@ -924,7 +922,8 @@
         '<li>Ligar as decisões aos territórios e aos grupos atingidos.</li></ul>' +
 
       '<h2 id="equipe">Equipe</h2><div class="equipe">' +
-        '<div class="pessoa"><strong>Sâmia Souza Santos</strong></div>' +
+        '<div class="pessoa"><span class="pessoa-sigla">SS</span><div><strong>Sâmia Souza Santos</strong><span>Pesquisadora responsável. Doutoranda no Programa de Pós-Graduação em Direitos Humanos e Desenvolvimento da Justiça (DHJUS) da Universidade Federal de Rondônia.</span></div></div>' +
+        '<div class="pessoa"><span class="pessoa-sigla">AC</span><div><strong>Dra. Adriana Vieira da Costa</strong><span>Orientadora da pesquisa no DHJUS/UNIR.</span></div></div>' +
       '</div>' +
 
       '<h2 id="metodologia">Metodologia</h2>' +

@@ -515,3 +515,92 @@ a.selo-eixo:hover { color: var(--mata); text-decoration: none; background: var(-
   .sobre-resumo, .acervo-numeros { grid-template-columns: 1fr; }
   .pauta-item { grid-template-columns: 1fr; gap: 6px; }
 }
+
+/* Cores do Radar: uma cor por grau de evidência */
+:root { --g-isolado: #7C8A84; --g-observacao: #C27C0E; --g-inicial: #2F6FA3; --g-sustentado: #2E7D4F; }
+.medidor.grau-isolado i.cheio { background: var(--g-isolado); }
+.medidor.grau-observacao i.cheio { background: var(--g-observacao); }
+.medidor.grau-inicial i.cheio { background: var(--g-inicial); }
+.medidor.grau-sustentado i.cheio { background: var(--g-sustentado); }
+.tendencia-grau { padding: 3px 10px; border-radius: 12px; }
+.tendencia-grau.grau-isolado { color: #4F5B56; background: #EDF0EE; }
+.tendencia-grau.grau-observacao { color: #8A5507; background: #FBF0DD; }
+.tendencia-grau.grau-inicial { color: #1F4F78; background: #E6EFF8; }
+.tendencia-grau.grau-sustentado { color: #1F5A38; background: #E3F2E9; }
+.tendencia[class*="grau-"] { border-top: 0; border-left: 4px solid var(--linha); padding: 16px 18px; margin-bottom: 14px; background: #fff; box-shadow: 0 1px 0 rgba(0, 0, 0, .04); }
+.tendencia.grau-isolado { border-left-color: var(--g-isolado); }
+.tendencia.grau-observacao { border-left-color: var(--g-observacao); }
+.tendencia.grau-inicial { border-left-color: var(--g-inicial); }
+.tendencia.grau-sustentado { border-left-color: var(--g-sustentado); }
+.escala { border: 0; gap: 10px; }
+.escala-passo { border: 0; border-top: 4px solid var(--linha); background: #fff; }
+.escala-passo.grau-isolado { border-top-color: var(--g-isolado); }
+.escala-passo.grau-observacao { border-top-color: var(--g-observacao); }
+.escala-passo.grau-inicial { border-top-color: var(--g-inicial); }
+.escala-passo.grau-sustentado { border-top-color: var(--g-sustentado); }
+.radar-indice { background: #fff; border: 1px solid var(--linha); }
+.radar-indice li a { border-left: 4px solid transparent; }
+.radar-indice li:nth-child(1) a { border-left-color: #2B6461; }
+.radar-indice li:nth-child(2) a { border-left-color: var(--g-inicial); }
+.radar-indice li:nth-child(3) a { border-left-color: var(--g-isolado); }
+.radar-indice li:nth-child(4) a { border-left-color: #8C5A22; }
+.radar-indice li:nth-child(5) a { border-left-color: #6B4C9A; }
+.radar-indice li:nth-child(6) a { border-left-color: var(--g-observacao); }
+.radar-indice li:nth-child(7) a { border-left-color: var(--g-sustentado); }
+.modulo > h2 { display: flex; align-items: center; gap: 10px; }
+.modulo > h2::before { content: ""; width: 12px; height: 12px; border-radius: 50%; background: var(--mata); flex: none; }
+#novas > h2::before { background: #2B6461; }
+#tendencias > h2::before { background: var(--g-inicial); }
+#metodo > h2::before { background: var(--g-isolado); }
+#divergencias > h2::before { background: #8C5A22; }
+#precedentes > h2::before { background: #6B4C9A; }
+#tramitacao > h2::before { background: var(--g-observacao); }
+#boletins > h2::before { background: var(--g-sustentado); }
+.divergencia { border-left: 4px solid #8C5A22; background: #fff; }
+.lado { padding: 10px 12px 12px; }
+.lado:nth-child(1) { border-top-color: #2B6461; background: #EEF5F4; }
+.lado:nth-child(2) { border-top-color: #8C5A22; background: #F8F1E7; }
+.lado:nth-child(3) { border-top-color: var(--g-inicial); background: #EEF3F8; }
+.boletim-chamada { background: linear-gradient(110deg, var(--mata) 0%, #2B6461 60%, #2F6FA3 100%); }
+
+/* Em pauta: notícias em cards */
+.pauta-grade { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; }
+.noticia { background: #fff; border: 1px solid var(--linha); border-radius: var(--raio); overflow: hidden; display: flex; flex-direction: column; }
+.noticia-capa { position: relative; aspect-ratio: 16 / 9; background: var(--nevoa); overflow: hidden; }
+.noticia-capa img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.noticia-credito { position: absolute; right: 0; bottom: 0; background: rgba(0, 0, 0, .55); color: #fff; font-size: 10px; padding: 2px 6px; }
+.noticia-sem-foto { display: flex; flex-direction: column; justify-content: flex-end; padding: 16px 18px; color: #fff; }
+.noticia-sem-foto.tipo-imprensa { background: linear-gradient(135deg, #8C5A22 0%, #C27C0E 100%); }
+.noticia-sem-foto.tipo-justica { background: linear-gradient(135deg, var(--mata) 0%, #2F6FA3 100%); }
+.noticia-sem-foto strong { font-size: 22px; font-weight: 400; line-height: 1.2; }
+.noticia-selo { align-self: flex-start; font-size: 11px; text-transform: uppercase; letter-spacing: .08em; background: rgba(255, 255, 255, .2); padding: 2px 8px; margin-bottom: auto; }
+.noticia-corpo { padding: 14px 16px 16px; display: flex; flex-direction: column; flex: 1; }
+.noticia-meta { font-size: 12px; color: var(--cinza); margin: 0 0 6px; }
+.noticia h3 { font-size: 16px; line-height: 1.35; margin: 0 0 8px; font-weight: 500; }
+.noticia h3 a { color: var(--tinta); text-decoration: none; }
+.noticia h3 a:hover { color: var(--mata); }
+.noticia-corpo > p:not(.noticia-meta) { font-size: 14px; color: var(--texto); line-height: 1.55; margin: 0 0 10px; }
+.noticia-link { margin-top: auto; font-size: 14px; font-weight: 500; }
+
+/* Temas e Territórios: dois mapas lado a lado */
+.mapas-explica { max-width: 82ch; font-size: 15px; color: var(--texto); line-height: 1.6; margin: 0 0 20px; }
+.mapas-lado { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px; }
+.mapa-titulo { font-size: 17px; font-weight: 500; padding: 8px 12px; margin: 0 0 10px; color: #fff; border-radius: var(--raio); }
+.titulo-comarca { background: var(--mata); }
+.titulo-impacto { background: #8C5A22; }
+.mapa-bloco h4 { font-size: 14px; font-weight: 500; margin: 18px 0 8px; color: var(--tinta); }
+
+/* Equipe */
+.pessoa { display: flex; gap: 14px; align-items: flex-start; }
+.pessoa-sigla { flex: none; width: 46px; height: 46px; border-radius: 50%; background: var(--mata); color: #fff !important; display: flex; align-items: center; justify-content: center; font-size: 15px !important; letter-spacing: .04em; }
+.pessoa:nth-child(2) .pessoa-sigla { background: #2F6FA3; }
+.pessoa span:not(.pessoa-sigla) { display: block; margin-top: 3px; line-height: 1.5; }
+
+@media (max-width: 960px) {
+  .pauta-grade { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .mapas-lado { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 600px) {
+  .pauta-grade { grid-template-columns: minmax(0, 1fr); }
+}
+.barras-terra .barra span { background: #8C5A22; }
