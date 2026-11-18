@@ -225,8 +225,8 @@
     var P = DJ.panorama;
 
     main.innerHTML =
-      faixa('Conhecer os conflitos, compreender as decisões e acompanhar a justiça socioambiental na Amazônia.',
-        'A base empírica inicial são acórdãos do Tribunal de Justiça de Rondônia sobre conflitos socioambientais.', '',
+      faixa('Territórios, direito e justiça na Amazônia.',
+        'Justiça socioambiental na Amazônia em dados e contextos.', '',
         '<form class="busca" role="search" id="busca-inicio"><label for="q-inicio" class="pular">Buscar processos</label>' +
         '<input id="q-inicio" type="search" placeholder="Número do processo, assunto, comarca ou gabinete"><button type="submit">Buscar</button></form>', 'faixa-inicio') +
 
