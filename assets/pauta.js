@@ -9,6 +9,12 @@ window.OJSA_PAUTA = [
     link: '#/processos/7029441-56.2016.8.22.0001', rotuloLink: 'Ver a triagem'
   },
   {
+    ordem: '2026-11-17', quando: '17/11/2026', fonte: 'g1 Rondônia',
+    titulo: 'Governo de Rondônia revoga decreto que suspendia o garimpo em trecho do rio Madeira',
+    texto: 'O Decreto estadual 32.266, publicado no Diário Oficial do Estado, revogou a norma de 1991 que suspendia a extração mineral e o garimpo em um trecho do rio. A atividade continua dependendo de título minerário e de licença ambiental. Entre os motivos, o governo cita uma decisão do TJRO e um parecer da Advocacia-Geral da União.',
+    link: 'https://g1.globo.com/ro/rondonia/noticia/2026/11/17/governo-de-ro-revoga-decreto-que-suspendia-garimpo-em-trecho-do-rio-madeira.ghtml', rotuloLink: 'Ler a notícia'
+  },
+  {
     ordem: '2026-11-10', quando: 'Novembro de 2026', fonte: 'Observatório',
     titulo: 'Boletim de novembro: panorama jurisprudencial da justiça socioambiental em Rondônia',
     texto: 'O primeiro boletim reúne os acórdãos do acervo, as tendências em observação e os números do DataJud para o 2º grau do TJRO.',
