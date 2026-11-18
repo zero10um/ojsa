@@ -608,3 +608,25 @@ a.selo-eixo:hover { color: var(--mata); text-decoration: none; background: var(-
 .pessoa { align-items: center; padding: 18px 20px; }
 .sobre-resumo { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 @media (max-width: 960px) { .sobre-resumo { grid-template-columns: minmax(0, 1fr); } }
+
+/* Página inicial: fichas e eixos em cartões */
+.cartoes-fichas .lista-decisoes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.cartoes-fichas .decisao { border: 1px solid var(--linha); border-top: 4px solid var(--folha); border-radius: var(--raio); background: #fff; }
+.cartoes-fichas .decisao:nth-child(2) { border-top-color: #2F6FA3; }
+.cartoes-fichas .decisao:nth-child(3) { border-top-color: #8C5A22; }
+.cartoes-fichas .decisao:nth-child(4) { border-top-color: #C27C0E; }
+.cartoes-fichas .decisao a.decisao-link { grid-template-columns: minmax(0, 1fr); gap: 8px; padding: 16px 18px; height: 100%; }
+.cartoes-fichas .decisao-data small { display: inline; margin-left: 6px; }
+.cartoes-fichas .decisao-titulo { font-size: 17px; }
+.cartoes-fichas .decisao-lado { align-self: start; }
+.cartoes-eixos .eixos { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.cartoes-eixos .eixo a { display: flex; flex-direction: column; gap: 8px; height: 100%; padding: 18px 20px; border: 1px solid var(--linha); border-top: 5px solid var(--folha); border-radius: var(--raio); background: #fff; }
+.cartoes-eixos .eixo:nth-child(1) a { border-top-color: #2F6FA3; }
+.cartoes-eixos .eixo:nth-child(2) a { border-top-color: #2B6461; }
+.cartoes-eixos .eixo:nth-child(3) a { border-top-color: #2E7D4F; }
+.cartoes-eixos .eixo:nth-child(4) a { border-top-color: #8C5A22; }
+.cartoes-eixos .eixo:nth-child(5) a { border-top-color: #C27C0E; }
+.cartoes-eixos .eixo-n { margin-top: auto; text-align: left; display: flex; align-items: baseline; gap: 6px; }
+.cartoes-eixos .eixo-n b { font-size: 26px; }
+@media (max-width: 960px) { .cartoes-eixos .eixos { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 600px) { .cartoes-fichas .lista-decisoes, .cartoes-eixos .eixos { grid-template-columns: minmax(0, 1fr); } }
