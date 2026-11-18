@@ -596,6 +596,22 @@
     setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
   }
 
+  // Triagem da pesquisa: se o acórdão do processo entra na análise qualitativa (assets/triagem.js)
+  function htmlTriagem(numero) {
+    var T = window.OJSA_TRIAGEM;
+    var t = T && T.processos[numero];
+    if (!t) {
+      return '<section class="triagem triagem-pendente"><h2>Triagem da pesquisa</h2>' +
+        '<p>Este processo ainda não passou pela triagem que define se o acórdão entra na análise qualitativa do Observatório. A triagem piloto começa em ' + esc(T ? T.inicioPiloto : 'janeiro de 2027') + '.</p></section>';
+    }
+    var rotulo = { incluido: 'Incluído na análise', excluido: 'Excluído da análise', duvida: 'Em dúvida: aguarda leitura do inteiro teor' }[t.resultado];
+    function item(r, v) { return '<dt>' + r + '</dt><dd>' + esc(v) + '</dd>'; }
+    return '<section class="triagem"><div class="triagem-topo"><h2>Triagem da pesquisa</h2><span class="triagem-resultado triagem-' + t.resultado + '">' + rotulo + '</span></div>' +
+      '<dl class="triagem-itens">' + item('Grupo no pré-diagnóstico', t.grupo) + item('Documento lido', t.documento) +
+      item('Elemento ambiental', t.ambiental) + item('Elemento social', t.social) + item('Motivo', t.motivo) + item('Próximo passo', t.proximo) + '</dl>' +
+      '<p class="nota">Triagem feita em ' + esc(t.data) + ', ' + esc(T.protocolo) + '. A triagem decide se o acórdão entra na análise; não avalia a decisão do Tribunal.</p></section>';
+  }
+
   // Página de um processo: dados do DataJud, andamento completo e publicações oficiais
   function telaProcesso(numeroRota) {
     var numero = formatarNumero(numeroRota);
@@ -604,6 +620,7 @@
       faixa('Processo ' + esc(numero), 'Dados da API Pública do DataJud e publicações do Diário de Justiça Eletrônico Nacional, ambos do CNJ.', '<a href="#/processos">Processos ambientais no TJRO</a> / ' + esc(numero)) +
       '<div class="miolo"><div class="ficha-grade"><div>' +
         (ficha ? '<div class="ressalva" style="margin-bottom:20px"><strong>Este processo tem ficha analítica.</strong> <a href="#/decisoes/' + ficha.id + '">' + esc(ficha.titulo) + '</a></div>' : '') +
+        htmlTriagem(numero) +
         '<section class="grupo" style="border-top:0;padding-top:0"><h2>Publicações no Diário de Justiça</h2>' +
           '<p class="nota">Decisões, sentenças, acórdãos e intimações publicados oficialmente. Quando o tribunal disponibiliza, há link para o documento no PJe.</p>' +
           '<div id="publicacoes">' + carregandoHtml('Consultando o Diário de Justiça Eletrônico Nacional') + '</div></section>' +
