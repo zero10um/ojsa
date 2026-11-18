@@ -256,18 +256,19 @@
 
       '<div class="miolo">' +
         '<section class="secao"><div class="secao-cabeca"><h2>Sobre o Observatório</h2><a href="#/sobre">Apresentação completa</a></div>' +
+          '<p class="sobre-abertura">O Observatório da Justiça Socioambiental na Amazônia é uma plataforma pública que reúne, organiza e explica as decisões do Tribunal de Justiça de Rondônia sobre conflitos socioambientais. É o produto de uma pesquisa de doutorado do Programa de Pós-Graduação em Direitos Humanos e Desenvolvimento da Justiça (DHJUS) da Universidade Federal de Rondônia, feito para que qualquer pessoa possa ver quais conflitos chegam à Justiça, onde acontecem e como são decididos.</p>' +
           '<div class="sobre-resumo">' +
-            '<div><h3>O que é</h3><p>Pesquisa de doutorado do DHJUS, Universidade Federal de Rondônia.</p></div>' +
-            '<div><h3>O que observa</h3><p>Decisões do TJRO sobre conflitos por rios, florestas, terras e áreas protegidas.</p></div>' +
-            '<div><h3>Como trabalha</h3><p>Fontes públicas, triagem documentada e fichas com a origem de cada informação.</p></div>' +
+            '<div><h3>O que observa</h3><p>Decisões do TJRO sobre disputas por rios, florestas, terras e áreas protegidas que atingem comunidades.</p></div>' +
+            '<div><h3>Como trabalha</h3><p>Usa fontes públicas, faz triagem documentada e mostra a origem de cada informação nas fichas.</p></div>' +
+            '<div><h3>Para que serve</h3><p>Apoia pesquisas, o debate público e o próprio sistema de justiça com informação organizada e verificável.</p></div>' +
           '</div>' +
         '</section>' +
 
         '<section class="secao"><div class="secao-cabeca"><h2>Onde estão os conflitos</h2><a href="#/temas">Temas e Territórios</a></div>' +
-          textoMapas() +
+          
           '<div class="mapas-lado">' +
-            (P ? '<div class="mapa-bloco"><h3 class="mapa-titulo titulo-comarca">Processos ambientais por comarca</h3>' + mapa('datajud') + '</div>' : '') +
-            '<div class="mapa-bloco"><h3 class="mapa-titulo titulo-impacto">Decisões analisadas por local do conflito</h3>' + mapa('fichas') + '</div>' +
+            (P ? '<div class="mapa-bloco"><h3 class="mapa-titulo titulo-comarca">Processos ambientais por comarca</h3><p class="mapa-porque">Todos os processos ambientais do TJRO registrados no DataJud. Porto Velho passa de mil porque é a maior comarca do estado e concentra centenas de pedidos de indenização ligados às cheias e às usinas do rio Madeira.</p>' + mapa('datajud') + '</div>' : '') +
+            '<div class="mapa-bloco"><h3 class="mapa-titulo titulo-impacto">Decisões analisadas por local do conflito</h3><p class="mapa-porque">Só as decisões que a pesquisa já leu e classificou, uma a uma. Por isso ainda são poucas: o número cresce a cada triagem, que começa em 2027.</p>' + mapa('fichas') + '</div>' +
           '</div>' +
         '</section>' +
 
@@ -859,14 +860,14 @@
   function telaTemas() {
     var P = DJ.panorama;
     main.innerHTML =
-      faixa('Temas e Territórios', 'Os tipos de conflito que chegam ao TJRO e onde eles acontecem. O desmatamento é um tema entre outros; o foco é a resposta do Judiciário aos conflitos.') +
+      faixa('Temas e Territórios', 'Os tipos de conflito que chegam ao TJRO e onde eles acontecem.') +
       '<div class="miolo">' +
         '<section class="secao"><div class="secao-cabeca"><h2>Mapas dos conflitos</h2></div>' +
-          textoMapas() +
+          
           '<div class="mapas-lado">' +
-            (P ? '<div class="mapa-bloco"><h3 class="mapa-titulo titulo-comarca">Processos ambientais por comarca</h3>' + mapa('datajud') +
+            (P ? '<div class="mapa-bloco"><h3 class="mapa-titulo titulo-comarca">Processos ambientais por comarca</h3><p class="mapa-porque">Todos os processos ambientais do TJRO registrados no DataJud. Porto Velho passa de mil porque é a maior comarca do estado e concentra centenas de pedidos de indenização ligados às cheias e às usinas do rio Madeira.</p>' + mapa('datajud') +
               '<h4>Comarcas de origem com mais processos</h4>' + barras(P.porComarca.slice(0, 6)) + '</div>' : '') +
-            '<div class="mapa-bloco"><h3 class="mapa-titulo titulo-impacto">Decisões analisadas por local do conflito</h3>' + mapa('fichas') +
+            '<div class="mapa-bloco"><h3 class="mapa-titulo titulo-impacto">Decisões analisadas por local do conflito</h3><p class="mapa-porque">Só as decisões que a pesquisa já leu e classificou, uma a uma. Por isso ainda são poucas: o número cresce a cada triagem, que começa em 2027.</p>' + mapa('fichas') +
               '<h4>Decisões por local do conflito</h4><div class="barras-terra">' + barras(contar(D.fichas, function (f) { return f.municipio ? f.municipio.nome : 'Abrangência estadual'; })) + '</div></div>' +
           '</div>' +
         '</section>' +
