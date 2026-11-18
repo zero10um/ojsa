@@ -922,8 +922,8 @@
         '<li>Ligar as decisões aos territórios e aos grupos atingidos.</li></ul>' +
 
       '<h2 id="equipe">Equipe</h2><div class="equipe">' +
-        '<div class="pessoa"><span class="pessoa-sigla">SS</span><div><strong>Sâmia Souza Santos</strong><span>Pesquisadora responsável. Doutoranda no Programa de Pós-Graduação em Direitos Humanos e Desenvolvimento da Justiça (DHJUS) da Universidade Federal de Rondônia.</span></div></div>' +
-        '<div class="pessoa"><span class="pessoa-sigla">AC</span><div><strong>Dra. Adriana Vieira da Costa</strong><span>Orientadora da pesquisa no DHJUS/UNIR.</span></div></div>' +
+        '<div class="pessoa"><img class="pessoa-foto" src="assets/equipe/samia.jpg" alt="Sâmia Souza Santos"><div><strong>Sâmia Souza Santos</strong><span>Pesquisadora responsável. Doutoranda no Programa de Pós-Graduação em Direitos Humanos e Desenvolvimento da Justiça (DHJUS) da Universidade Federal de Rondônia.</span></div></div>' +
+        '<div class="pessoa"><img class="pessoa-foto" src="assets/equipe/adriana.jpg" alt="Dra. Adriana Vieira da Costa"><div><strong>Dra. Adriana Vieira da Costa</strong><span>Orientadora da pesquisa no DHJUS/UNIR.</span></div></div>' +
       '</div>' +
 
       '<h2 id="metodologia">Metodologia</h2>' +
