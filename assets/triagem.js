@@ -9,13 +9,13 @@ window.OJSA_TRIAGEM = {
   processos: {
     '7029441-56.2016.8.22.0001': {
       data: '18/11/2026',
-      resultado: 'incluido',
-      grupo: 'Ações repetitivas: cheia de 2014 e Usina Hidrelétrica de Santo Antônio',
-      documento: 'Ementa do acórdão da 1ª Câmara Cível, transcrita em decisão publicada no Diário de Justiça Eletrônico Nacional em 31/08/2023',
-      ambiental: 'Sim. Cheia do Rio Madeira em 2014 e construção da Usina Hidrelétrica de Santo Antônio.',
-      social: 'Sim. Moradores e trabalhadores do Shopping Popular de Porto Velho pedem reparação dos danos da inundação.',
-      motivo: 'A controvérsia envolve o rio, a usina e um grupo de pessoas atingidas, como exige a definição de conflito socioambiental da pesquisa.',
-      proximo: 'Conferir o inteiro teor do acórdão no PJe e preencher a ficha no grupo de ações repetitivas da usina.'
+      resultado: 'preselecionado',
+      grupo: 'Ações indenizatórias ligadas à cheia de 2014 e à Usina Hidrelétrica de Santo Antônio',
+      documento: 'Ementa do acórdão da 1ª Câmara Cível, transcrita em decisão sobre a admissibilidade de recurso especial publicada no Diário de Justiça Eletrônico Nacional em 31/08/2023. O inteiro teor do acórdão ainda não foi lido.',
+      ambiental: 'Sim. A ementa trata da cheia do rio Madeira em 2014 e da construção da Usina Hidrelétrica de Santo Antônio.',
+      social: 'Sim. A ementa menciona danos a moradores e trabalhadores da região afetada e cita o Shopping Popular de Porto Velho.',
+      motivo: 'A ementa reúne elemento ambiental (o rio e a usina) e elemento social (pessoas atingidas), como exige a definição de conflito socioambiental da pesquisa.',
+      situacao: 'Pré-seleção feita com base na ementa. A inclusão no acervo analisado depende da leitura do inteiro teor do acórdão.'
     }
   }
 };
