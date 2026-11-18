@@ -244,7 +244,6 @@
     main.innerHTML =
       faixa('Territórios, Direito e Justiça na Amazônia.',
         'Justiça socioambiental na Amazônia em dados e contextos.', '',
-        '<p class="faixa-frase">Um observatório de pesquisa que reúne, classifica e explica as decisões do Tribunal de Justiça de Rondônia sobre conflitos socioambientais: quem é atingido, onde, com quais direitos em jogo e como o Tribunal responde.</p>' +
         '<p class="faixa-botoes"><a class="botao botao-ouro" href="#/sobre">Conheça o Observatório</a><a class="botao botao-vazado" href="#/temas">Explore os conflitos</a></p>', 'faixa-inicio') +
 
       '<div class="miolo">' +
