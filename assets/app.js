@@ -242,8 +242,6 @@
   function telaInicio() {
     var recentes = D.fichas.slice().sort(porData).slice(0, 4);
     var P = DJ.panorama;
-    var municipios = {};
-    D.fichas.forEach(function (f) { if (f.municipio) municipios[f.municipio.id] = 1; });
 
     main.innerHTML =
       faixa('Territórios, Direito e Justiça na Amazônia.',
@@ -256,13 +254,14 @@
             '<div><h3>O que é</h3><p>Produto de pesquisa de doutorado do Programa de Pós-Graduação em Direitos Humanos e Desenvolvimento da Justiça (DHJUS) da Universidade Federal de Rondônia.</p></div>' +
             '<div><h3>O que observa</h3><p>Os acórdãos do TJRO sobre disputas por rios, florestas, terras e áreas protegidas que atingem comunidades e grupos sociais.</p></div>' +
             '<div><h3>Como trabalha</h3><p>Fontes públicas, triagem documentada e fichas que separam o fato registrado na decisão, a síntese e a interpretação da pesquisa.</p></div>' +
-            '<div><h3>O que não é</h3><p>Não é canal oficial do Tribunal, não avalia magistrados e não orienta o julgamento de processos.</p></div>' +
           '</div>' +
-          '<div class="acervo-numeros">' +
-            '<div><b>' + D.fichas.length + '</b><span>fichas analíticas</span></div>' +
-            '<div><b>' + D.eixos.length + '</b><span>eixos temáticos</span></div>' +
-            '<div><b>' + Object.keys(municipios).length + '</b><span>municípios com conflito localizado</span></div>' +
-            '<div><b>' + D.tendencias.length + '</b><span>tendências em observação</span></div>' +
+        '</section>' +
+
+        '<section class="secao"><div class="secao-cabeca"><h2>Onde estão os conflitos</h2><a href="#/temas">Temas e Territórios</a></div>' +
+          '<p class="mapas-explica">À esquerda, onde os processos começaram, pela sede da comarca. À direita, onde está o conflito de cada decisão analisada, segundo o documento. Os dois lugares nem sempre coincidem.</p>' +
+          '<div class="mapas-lado">' +
+            (P ? '<div class="mapa-bloco"><h3 class="mapa-titulo titulo-comarca">Onde os processos começaram</h3>' + mapa('datajud') + '</div>' : '') +
+            '<div class="mapa-bloco"><h3 class="mapa-titulo titulo-impacto">Onde está o conflito</h3>' + mapa('fichas') + '</div>' +
           '</div>' +
         '</section>' +
 
@@ -277,12 +276,9 @@
           '<div class="pauta-grade">' + pauta().slice(0, 3).map(itemPauta).join('') + '</div>' +
         '</section>' +
 
-        '<div class="duas secao">' +
-          '<section><div class="secao-cabeca"><h2>Fichas analíticas</h2><a href="#/decisoes">Ver todas</a></div>' +
-            '<p class="nota">Acórdãos lidos e classificados pela pesquisa: conflito, grupos atingidos, fundamentos e dimensões de justiça socioambiental.</p>' +
-            '<ul class="lista-decisoes">' + recentes.map(itemDecisao).join('') + '</ul></section>' +
-          '<section><div class="secao-cabeca"><h2>Onde estão os conflitos</h2><a href="#/temas">Ver as duas camadas</a></div>' + mapa('fichas') + '</section>' +
-        '</div>' +
+        '<section class="secao"><div class="secao-cabeca"><h2>Fichas analíticas</h2><a href="#/decisoes">Ver todas</a></div>' +
+          '<p class="nota">Acórdãos lidos e classificados pela pesquisa: conflito, grupos atingidos, fundamentos e dimensões de justiça socioambiental.</p>' +
+          '<ul class="lista-decisoes">' + recentes.map(itemDecisao).join('') + '</ul></section>' +
 
         '<section class="secao"><div class="secao-cabeca"><h2>Eixos temáticos</h2><p>Os eixos saem dos conflitos encontrados no acervo.</p></div>' + listaEixos() + '</section>' +
 
