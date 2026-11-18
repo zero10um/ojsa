@@ -219,6 +219,12 @@
     }).join('') + '</ul>';
   }
 
+  function textoMapas() {
+    var P = DJ.panorama;
+    return '<p class="mapas-explica">' + (P ? 'O mapa da esquerda conta <b>todos os ' + milhar(P.civeis) + ' processos ambientais</b> do TJRO pela comarca onde começaram. ' : '') +
+      'O da direita mostra só <b>as ' + D.fichas.length + ' decisões já analisadas</b> pela pesquisa, no lugar do conflito. Por isso os números são tão diferentes: um é o universo de processos; o outro, o acervo analisado, que cresce a cada triagem.</p>';
+  }
+
   // Em pauta: notícias e atos com data, fonte e link (assets/pauta.js)
   function pauta() { return (window.OJSA_PAUTA || []).slice().sort(function (a, b) { return b.ordem.localeCompare(a.ordem); }); }
   function itemPauta(p) {
@@ -258,10 +264,10 @@
         '</section>' +
 
         '<section class="secao"><div class="secao-cabeca"><h2>Onde estão os conflitos</h2><a href="#/temas">Temas e Territórios</a></div>' +
-          '<p class="mapas-explica">Onde o processo começa nem sempre é onde está o conflito.</p>' +
+          textoMapas() +
           '<div class="mapas-lado">' +
-            (P ? '<div class="mapa-bloco"><h3 class="mapa-titulo titulo-comarca">Onde os processos começaram</h3>' + mapa('datajud') + '</div>' : '') +
-            '<div class="mapa-bloco"><h3 class="mapa-titulo titulo-impacto">Onde está o conflito</h3>' + mapa('fichas') + '</div>' +
+            (P ? '<div class="mapa-bloco"><h3 class="mapa-titulo titulo-comarca">Processos ambientais por comarca</h3>' + mapa('datajud') + '</div>' : '') +
+            '<div class="mapa-bloco"><h3 class="mapa-titulo titulo-impacto">Decisões analisadas por local do conflito</h3>' + mapa('fichas') + '</div>' +
           '</div>' +
         '</section>' +
 
@@ -773,7 +779,7 @@
             '<div id="tramitacao-lista">' + htmlTramitacao() + '</div></section>' +
 
           '<section class="modulo" id="boletins"><h2>Boletins</h2>' +
-            '<div class="boletim-chamada"><div><h3>Panorama jurisprudencial da justiça socioambiental em Rondônia</h3><p>Novembro de 2026</p></div><a class="botao" href="#/radar/boletim">Ler o boletim</a></div>' +
+            '<div class="boletim-chamada"><div><h3>Panorama jurisprudencial</h3><p>Revisão realizada até novembro de 2026</p></div><a class="botao" href="#/radar/boletim">Ler o boletim</a></div>' +
           '</section>' +
         '</div>' +
       '</div></div>';
@@ -783,7 +789,7 @@
     var novas = D.fichas.slice().sort(porData);
     var P = DJ.panorama;
     main.innerHTML =
-      faixa('Panorama jurisprudencial da justiça socioambiental em Rondônia, novembro de 2026', 'Próxima revisão prevista para dezembro de 2026.', '<a href="#/radar">Radar Jurisprudencial</a> / Boletins') +
+      faixa('Panorama jurisprudencial', 'Revisão realizada até novembro de 2026.', '<a href="#/radar">Radar Jurisprudencial</a> / Boletins') +
       '<div class="miolo"><article class="boletim">' +
       '<p class="nao-imprimir"><button class="botao botao-claro" type="button" id="imprimir">Imprimir ou salvar em PDF</button></p>' +
       '<h2>Abrangência e metodologia</h2><p>Acórdãos do TJRO sobre conflitos socioambientais, localizados em notícias institucionais e bases acadêmicas e conferidos na API Pública do DataJud. São ' + plural(D.fichas.length, 'decisão', 'decisões') + ' no acervo. As fichas distinguem fatos documentados, sínteses editoriais e inferências da pesquisa.' +
@@ -855,12 +861,12 @@
     main.innerHTML =
       faixa('Temas e Territórios', 'Os tipos de conflito que chegam ao TJRO e onde eles acontecem. O desmatamento é um tema entre outros; o foco é a resposta do Judiciário aos conflitos.') +
       '<div class="miolo">' +
-        '<section class="secao"><div class="secao-cabeca"><h2>Onde os processos começam e onde os conflitos acontecem</h2></div>' +
-          '<p class="mapas-explica">Onde o processo começa nem sempre é onde está o conflito.</p>' +
+        '<section class="secao"><div class="secao-cabeca"><h2>Mapas dos conflitos</h2></div>' +
+          textoMapas() +
           '<div class="mapas-lado">' +
-            (P ? '<div class="mapa-bloco"><h3 class="mapa-titulo titulo-comarca">Onde os processos começaram</h3>' + mapa('datajud') +
+            (P ? '<div class="mapa-bloco"><h3 class="mapa-titulo titulo-comarca">Processos ambientais por comarca</h3>' + mapa('datajud') +
               '<h4>Comarcas de origem com mais processos</h4>' + barras(P.porComarca.slice(0, 6)) + '</div>' : '') +
-            '<div class="mapa-bloco"><h3 class="mapa-titulo titulo-impacto">Onde está o conflito</h3>' + mapa('fichas') +
+            '<div class="mapa-bloco"><h3 class="mapa-titulo titulo-impacto">Decisões analisadas por local do conflito</h3>' + mapa('fichas') +
               '<h4>Decisões por local do conflito</h4><div class="barras-terra">' + barras(contar(D.fichas, function (f) { return f.municipio ? f.municipio.nome : 'Abrangência estadual'; })) + '</div></div>' +
           '</div>' +
         '</section>' +

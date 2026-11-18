@@ -630,3 +630,9 @@ a.selo-eixo:hover { color: var(--mata); text-decoration: none; background: var(-
 .cartoes-eixos .eixo-n b { font-size: 26px; }
 @media (max-width: 960px) { .cartoes-eixos .eixos { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 600px) { .cartoes-fichas .lista-decisoes, .cartoes-eixos .eixos { grid-template-columns: minmax(0, 1fr); } }
+
+/* Nomes das seções em maiúsculas */
+.secao-cabeca h2, .modulo > h2, .grupo h2, .triagem h2 { text-transform: uppercase; letter-spacing: .05em; font-size: 18px; font-weight: 500; }
+.triagem-pendente h2 { font-size: 14px; }
+.boletim-chamada h3 { font-size: 20px; }
+.boletim-chamada p { font-size: 13px; }
