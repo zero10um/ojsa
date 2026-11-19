@@ -177,7 +177,7 @@
     var paths = '', rotulos = '';
     MAPA.municipios.forEach(function (m) {
       var k = n[m.id];
-      var rotulo = esc(m.nome) + (k ? ': ' + plural(k, modo === 'fichas' ? 'decisão' : 'processo', modo === 'fichas' ? 'decisões' : 'processos') : '');
+      var rotulo = esc(m.nome) + (k ? ': ' + plural(k, modo === 'fichas' ? 'ficha' : 'processo', modo === 'fichas' ? 'fichas' : 'processos') : '');
       if (k && modo === 'fichas') {
         paths += '<path d="' + m.d + '" style="fill:' + tom(k) + '" data-mun="' + m.id + '" tabindex="0" role="link" aria-label="' + rotulo + '"><title>' + rotulo + '</title></path>';
       } else {
@@ -192,20 +192,20 @@
     // legenda permanente: diz sempre se a área marcada é a sede da comarca ou o local do impacto territorial
     var camada, legenda, fora;
     if (modo === 'fichas') {
-      camada = '<div class="mapa-camada camada-impacto"><span class="mapa-camada-marca" aria-hidden="true"></span><div><strong>Local do impacto</strong>' +
-        '<span>Município associado ao impacto descrito na decisão.</span></div></div>';
-      legenda = '<span><i style="background:' + TERRA.muito + '"></i>3 ou mais decisões</span><span><i style="background:' + TERRA.pouco + '"></i>1 ou 2 decisões</span><span><i style="background:#F3F5F4"></i>sem decisões</span>';
+      camada = '<div class="mapa-camada camada-impacto"><span class="mapa-camada-marca" aria-hidden="true"></span><div><strong>Local do conflito</strong>' +
+        '<span>Município identificado nas fontes consultadas para a ficha.</span></div></div>';
+      legenda = '<span><i style="background:' + TERRA.muito + '"></i>3 ou mais fichas</span><span><i style="background:' + TERRA.pouco + '"></i>1 ou 2 fichas</span><span><i style="background:#F3F5F4"></i>sem fichas</span>';
       var estadual = D.fichas.filter(function (f) { return !f.municipio; }).length;
-      fora = estadual ? 'Fora do mapa: ' + plural(estadual, 'decisão de alcance estadual', 'decisões de alcance estadual') + '.' : '';
+      fora = estadual ? 'Fora do mapa: ' + plural(estadual, 'ficha de alcance estadual', 'fichas de alcance estadual') + '.' : '';
     } else {
       camada = '<div class="mapa-camada camada-comarca"><span class="mapa-camada-marca" aria-hidden="true"></span><div><strong>Sede da comarca</strong>' +
-        '<span>Município da sede da comarca de origem do processo.</span></div></div>';
+        '<span>Município da unidade judicial de origem do processo.</span></div></div>';
       legenda = '<span><i style="background:' + tons[0] + '"></i>menos processos</span><span><i style="background:' + tons[4] + '"></i>mais processos</span><span><i style="background:#F3F5F4"></i>sem processos</span>';
       var semLugar = DJ.panorama ? DJ.panorama.porComarca.filter(function (c) { return /protocolado|não identificada/i.test(c.rot); }).reduce(function (s, c) { return s + c.n; }, 0) : 0;
       fora = semLugar ? 'Fora do mapa: ' + plural(semLugar, 'processo protocolado diretamente no TJRO ou sem comarca identificada', 'processos protocolados diretamente no TJRO ou sem comarca identificada') + '.' : '';
     }
     return '<figure style="margin:0">' + camada +
-      '<svg class="mapa-ro" viewBox="0 0 ' + MAPA.largura + ' ' + MAPA.altura + '" role="img" aria-label="Mapa de Rondônia por município: ' + (modo === 'fichas' ? 'local do impacto territorial' : 'sede da comarca de origem') + '">' + paths + rotulos + '</svg>' +
+      '<svg class="mapa-ro" viewBox="0 0 ' + MAPA.largura + ' ' + MAPA.altura + '" role="img" aria-label="Mapa de Rondônia por município: ' + (modo === 'fichas' ? 'local do conflito' : 'sede da comarca de origem') + '">' + paths + rotulos + '</svg>' +
       '<figcaption><div class="mapa-legenda">' + legenda + '</div><p class="mapa-nota">' + (fora ? fora + ' ' : '') + 'Fonte: ' + (modo === 'fichas' ? 'fichas do Observatório' : 'DataJud (CNJ)') + ' e IBGE.</p></figcaption></figure>';
   }
 
@@ -228,13 +228,14 @@
 
   function blocoMapas(comBarras) {
     var P = DJ.panorama;
-    return '<div class="mapas-lado">' +
-        (P ? '<div class="mapa-bloco"><h3 class="mapa-titulo titulo-comarca">Processos do 2º grau por comarca de origem</h3>' +
-          '<p class="mapa-porque">Processos identificados no DataJud por assunto ambiental, agrupados pela comarca de origem indicada no número do processo. A sede da comarca não indica necessariamente onde ocorreu o impacto.</p>' + mapa('datajud') +
+    return '<p class="mapas-explica">Os mapas oferecem duas perspectivas: onde os processos começaram e quais locais estão relacionados aos casos apresentados nas fichas. Cada mapa tem sua própria contagem.</p>' +
+      '<div class="mapas-lado">' +
+        (P ? '<div class="mapa-bloco"><h3 class="mapa-titulo titulo-comarca">Processos por comarca de origem</h3>' +
+          '<p class="mapa-porque">Processos cíveis de segundo grau do TJRO com assuntos ambientais selecionados no DataJud, organizados pela sede da comarca de origem. A comarca indica onde o processo começou; o conflito pode ter ocorrido em outro local.</p>' + mapa('datajud') +
           (comBarras ? '<h4>Comarcas de origem com mais processos</h4>' + barras(P.porComarca.slice(0, 6)) : '') + '</div>' : '') +
-        '<div class="mapa-bloco"><h3 class="mapa-titulo titulo-impacto">Decisões analisadas por município do impacto</h3>' +
-          '<p class="mapa-porque">Decisões examinadas pela pesquisa, distribuídas conforme o município do impacto identificado em seu texto. O número representa decisões, não conflitos distintos.</p>' + mapa('fichas') +
-          (comBarras ? '<h4>Decisões por município do impacto</h4><div class="barras-terra">' + barras(contar(D.fichas, function (f) { return f.municipio ? f.municipio.nome : 'Abrangência estadual'; })) + '</div>' : '') + '</div>' +
+        '<div class="mapa-bloco"><h3 class="mapa-titulo titulo-impacto">Fichas por local do conflito</h3>' +
+          '<p class="mapa-porque">Fichas do Observatório organizadas pelo município associado ao conflito nas fontes consultadas. Os números indicam fichas, não conflitos distintos. As fontes e os limites da documentação estão indicados em cada ficha.</p>' + mapa('fichas') +
+          (comBarras ? '<h4>Fichas por município</h4><div class="barras-terra">' + barras(contar(D.fichas, function (f) { return f.municipio ? f.municipio.nome : 'Abrangência estadual'; })) + '</div>' : '') + '</div>' +
       '</div>';
   }
 
@@ -272,16 +273,16 @@
 
       '<div class="miolo">' +
         '<section class="secao obs-secao"><h2 class="obs-titulo">O Observatório</h2>' +
-          '<p class="obs-texto">O Observatório da Justiça Socioambiental na Amazônia é uma iniciativa de pesquisa vinculada ao DHJUS/UNIR. Reúne e analisa decisões do TJRO para mostrar quais questões socioambientais chegam à Justiça, quais territórios estão envolvidos e como essas questões são decididas.</p>' +
+          '<p class="obs-texto">O Observatório da Justiça Socioambiental na Amazônia (OJSA) é uma plataforma pública de pesquisa vinculada ao DHJUS/UNIR. Reúne informações sobre conflitos socioambientais que chegam ao Tribunal de Justiça de Rondônia e relaciona decisões judiciais, direitos em disputa e territórios envolvidos. Com fontes identificadas e linguagem acessível, o Observatório ajuda a compreender como essas questões são tratadas pela Justiça.</p>' +
           '<p class="obs-mais"><a href="#/sobre">Apresentação completa</a></p>' +
           '<div class="sobre-resumo">' +
-            '<div><h3>O que analisamos</h3><p>Decisões judiciais sobre questões socioambientais em Rondônia, considerando os temas discutidos, os territórios envolvidos e as respostas do Judiciário.</p></div>' +
-            '<div><h3>Como analisamos</h3><p>Selecionamos e classificamos decisões com critérios de pesquisa definidos e indicamos as fontes das informações apresentadas.</p></div>' +
-            '<div><h3>Por que isso importa</h3><p>Os dados ajudam a compreender quais questões chegam à Justiça e a identificar padrões e limites das respostas judiciais.</p></div>' +
+            '<div><h3>O que analisamos</h3><p>Decisões de segundo grau em processos cíveis do TJRO sobre questões socioambientais, considerando os temas discutidos, os direitos envolvidos, os territórios e as respostas judiciais.</p></div>' +
+            '<div><h3>Como analisamos</h3><p>Selecionamos os casos com critérios de pesquisa, consultamos as fontes disponíveis e organizamos as informações em fichas. Cada ficha apresenta suas fontes e distingue o que consta dos documentos da interpretação feita pela pesquisa.</p></div>' +
+            '<div><h3>Por que isso importa</h3><p>Ao reunir informações que estão dispersas em diferentes fontes, o OJSA facilita a busca por decisões e amplia a compreensão pública sobre os conflitos socioambientais em Rondônia.</p></div>' +
           '</div>' +
         '</section>' +
 
-        '<section class="secao"><div class="secao-cabeca"><h2>Do processo ao território do impacto</h2><a href="#/temas">Conflitos e territórios</a></div>' + blocoMapas(false) + '</section>' +
+        '<section class="secao"><div class="secao-cabeca"><h2>Da origem do processo ao local do conflito</h2><a href="#/temas">Conflitos e territórios</a></div>' + blocoMapas(false) + '</section>' +
 
         '<section class="secao"><div class="secao-cabeca"><h2>No Radar Jurisprudencial</h2><a href="#/radar/tendencias">Todas as tendências</a></div>' +
           D.tendencias.slice(0, 3).map(function (t) {
@@ -303,7 +304,7 @@
     main.innerHTML =
       faixa('Conflitos e territórios', 'Mapas dos processos e das decisões analisadas, e os eixos temáticos da pesquisa.') +
       '<div class="miolo">' +
-        '<section class="secao"><div class="secao-cabeca"><h2>Do processo ao território do impacto</h2></div>' + blocoMapas(true) + '</section>' +
+        '<section class="secao"><div class="secao-cabeca"><h2>Da origem do processo ao local do conflito</h2></div>' + blocoMapas(true) + '</section>' +
         '<section class="secao"><div class="secao-cabeca"><h2>Eixos temáticos da pesquisa</h2><p>Categorias usadas para classificar as decisões analisadas.</p></div>' + listaEixos() + '</section>' +
       '</div>';
     ligarMapa();
@@ -549,7 +550,7 @@
   }
 
   // submenu de Temas a partir dos eixos
-  document.getElementById('sub-temas').innerHTML = '<li><a href="#/temas">Mapas: comarca de origem e município do impacto</a></li>' +
+  document.getElementById('sub-temas').innerHTML = '<li><a href="#/temas">Mapas: origem do processo e local do conflito</a></li>' +
     '<li class="sub-rotulo">Eixos temáticos da pesquisa</li>' +
     D.eixos.map(function (e) { return '<li><a href="#/temas/' + e.id + '">' + esc(e.nome) + '</a></li>'; }).join('') +
     '<li class="sub-separa"><a href="#/em-pauta">Em pauta: notícias</a></li>';

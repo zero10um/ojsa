@@ -688,3 +688,6 @@ a.selo-eixo:hover { color: var(--mata); text-decoration: none; background: var(-
   .marca-simbolo { width: 42px; height: 42px; }
 }
 .sub-rotulo { text-transform: none; letter-spacing: 0; font-size: 12px; }
+
+/* mapas: introdução sem o aviso logo abaixo */
+.mapas-explica { margin-bottom: 22px; }
