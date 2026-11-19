@@ -268,12 +268,12 @@
   function telaInicio() {
     main.innerHTML =
       faixa('Territórios, Direitos e Justiça na Amazônia',
-        'Dados e análises sobre conflitos socioambientais nas decisões do Tribunal de Justiça de Rondônia, como subsídio para a governança socioambiental.', '',
+        'Dados e análises sobre conflitos socioambientais nas decisões do Tribunal de Justiça de Rondônia.', '',
         '<p class="faixa-botoes"><a class="botao botao-ouro" href="#/sobre">Conheça o Observatório</a><a class="botao botao-vazado" href="#/temas">Veja conflitos e territórios</a></p>', 'faixa-inicio') +
 
       '<div class="miolo">' +
         '<section class="secao obs-secao"><h2 class="obs-titulo">O Observatório</h2>' +
-          '<p class="obs-texto">O Observatório da Justiça Socioambiental na Amazônia é uma plataforma pública de pesquisa do DHJUS/UNIR. Reúne e organiza decisões do Tribunal de Justiça de Rondônia sobre conflitos socioambientais, com os territórios envolvidos, os direitos em disputa e a fonte de cada informação.</p>' +
+          '<p class="obs-texto">O Observatório da Justiça Socioambiental na Amazônia é uma plataforma pública de pesquisa do DHJUS/UNIR. Reúne e organiza decisões do Tribunal de Justiça de Rondônia sobre conflitos socioambientais, indicando os territórios envolvidos, os direitos em disputa e a fonte de cada informação, com o intuito de oferecer subsídios para a governança socioambiental.</p>' +
           '<p class="obs-mais"><a href="#/sobre">Apresentação completa</a></p>' +
           '<div class="sobre-resumo">' +
             '<div><h3>O que analisamos</h3><p>Acórdãos cíveis do TJRO sobre conflitos socioambientais.</p></div>' +
