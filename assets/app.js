@@ -273,12 +273,12 @@
 
       '<div class="miolo">' +
         '<section class="secao obs-secao"><h2 class="obs-titulo">O Observatório</h2>' +
-          '<p class="obs-texto">O Observatório da Justiça Socioambiental na Amazônia (OJSA) é uma plataforma pública de pesquisa vinculada ao DHJUS/UNIR. Reúne informações sobre conflitos socioambientais que chegam ao Tribunal de Justiça de Rondônia e relaciona decisões judiciais, direitos em disputa e territórios envolvidos. Com fontes identificadas e linguagem acessível, o Observatório ajuda a compreender como essas questões são tratadas pela Justiça.</p>' +
+          '<p class="obs-texto">Plataforma pública de pesquisa do DHJUS/UNIR sobre conflitos socioambientais julgados pelo Tribunal de Justiça de Rondônia.</p>' +
           '<p class="obs-mais"><a href="#/sobre">Apresentação completa</a></p>' +
           '<div class="sobre-resumo">' +
-            '<div><h3>O que analisamos</h3><p>Decisões de segundo grau em processos cíveis do TJRO sobre questões socioambientais, considerando os temas discutidos, os direitos envolvidos, os territórios e as respostas judiciais.</p></div>' +
-            '<div><h3>Como analisamos</h3><p>Selecionamos os casos com critérios de pesquisa, consultamos as fontes disponíveis e organizamos as informações em fichas. Cada ficha apresenta suas fontes e distingue o que consta dos documentos da interpretação feita pela pesquisa.</p></div>' +
-            '<div><h3>Por que isso importa</h3><p>Ao reunir informações que estão dispersas em diferentes fontes, o OJSA facilita a busca por decisões e amplia a compreensão pública sobre os conflitos socioambientais em Rondônia.</p></div>' +
+            '<div><h3>O que analisamos</h3><p>Acórdãos cíveis do TJRO sobre conflitos socioambientais.</p></div>' +
+            '<div><h3>Como analisamos</h3><p>Em fichas, com critérios definidos e fontes indicadas.</p></div>' +
+            '<div><h3>Por que isso importa</h3><p>Mostra como a Justiça responde a esses conflitos.</p></div>' +
           '</div>' +
         '</section>' +
 
