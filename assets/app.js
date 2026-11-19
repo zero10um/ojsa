@@ -268,7 +268,7 @@
   function telaInicio() {
     main.innerHTML =
       faixa('Territórios, Direitos e Justiça na Amazônia',
-        'Dados e análises sobre conflitos socioambientais nas decisões do Tribunal de Justiça de Rondônia.', '',
+        'Dados e análises sobre conflitos socioambientais nas decisões do Tribunal de Justiça de Rondônia, como subsídio para a governança socioambiental.', '',
         '<p class="faixa-botoes"><a class="botao botao-ouro" href="#/sobre">Conheça o Observatório</a><a class="botao botao-vazado" href="#/temas">Veja conflitos e territórios</a></p>', 'faixa-inicio') +
 
       '<div class="miolo">' +
