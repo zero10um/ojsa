@@ -1,7 +1,7 @@
 OJSA | Observatório da Justiça Socioambiental na Amazônia
 
 No ar
-  Código:  https://github.com/zero10um/osja
+  Código:  https://github.com/zero10um/ojsa
   Site:    publicado pela Vercel a partir do GitHub. Cada envio de código atualiza o site sozinho.
   Dados do DataJud: atualizados todo dia às 06h (horário de Brasília) pela tarefa
   .github/workflows/atualizar-datajud.yml. Para rodar na hora: GitHub > Actions >
