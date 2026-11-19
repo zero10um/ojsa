@@ -91,7 +91,7 @@ window.OJSA = {
         reconhecimento: { n: 'I', t: 'A posse da comunidade é reconhecida como reparável mesmo em área de domínio da União.' },
         participacao: null
       },
-      monitoramento: { n: 'S', t: 'Compõe a tendência sobre a prova do dano nos conflitos ligados às usinas do Rio Madeira. Aqui o nexo causal foi demonstrado por perícia, o que distingue o caso das ações de pescadores discutidas no STJ.', tendencia: 't2' },
+      monitoramento: { n: 'S', t: 'Registro isolado sobre a prova do dano em ações contra a usina de Santo Antônio. Aqui o nexo causal foi demonstrado por perícia; as ações de pescadores julgadas pelo STJ ficam em Precedentes relevantes.', tendencia: 't2' },
       fontes: [
         { tipo: 'Notícia do TJRO republicada', veiculo: 'Jornal da Ordem, OAB/RS', data: '10/09/2021', url: 'https://www2.oabrs.org.br/jornalDaOrdem/por-prejuizos-causados-2-camara-civel-mantem-condenacao-de-empresa-de-geracao-e-transmissao-de-energia/47860' }
       ],
@@ -460,13 +460,13 @@ window.OJSA = {
     },
     {
       id: 't2',
-      titulo: 'Como se prova o dano causado pelas usinas do Rio Madeira',
-      grau: 'observacao',
+      titulo: 'Prova do dano em ações contra a usina de Santo Antônio',
+      grau: 'isolado',
       fichas: ['ojsa-0001'],
-      orgaos: '2ª Câmara Cível; STJ, 3ª e 4ª Turmas',
-      periodo: '2021 a 2025',
-      descricao: 'No caso da comunidade São Sebastião, o nexo causal foi demonstrado por perícia. Em ações de pescadores, o STJ discute se o TJRO pode reconhecer o dano sem prova individualizada.',
-      ressalvas: 'Uma ficha do TJRO no acervo. Os casos dos pescadores ainda não têm ficha porque o número de origem no TJRO não foi divulgado nas fontes abertas.'
+      orgaos: '2ª Câmara Cível',
+      periodo: '2021',
+      descricao: 'No caso da comunidade São Sebastião, a câmara considerou o nexo causal demonstrado por perícia e manteve a condenação da concessionária.',
+      ressalvas: 'Uma decisão do TJRO no acervo. Os recursos de pescadores julgados pelo STJ aparecem em Precedentes relevantes e não são decisões do TJRO.'
     },
     {
       id: 't3',
@@ -503,19 +503,6 @@ window.OJSA = {
         { rotulo: 'Portal DORI, 20/09/2021', url: 'https://portaldori.com.br/2021/09/20/moradores-que-construiram-casas-sem-respeitar-area-de-protecao-permanente-deverao-demolir-edificacoes/' },
         { rotulo: 'Lex, 22/07/2022', url: 'https://www.lex.com.br/imovel-em-area-de-preservacao-as-margens-do-madeira-tera-de-ser-demolido/' }
       ]
-    },
-    {
-      titulo: 'Prova do dano de pescadores atingidos pelas usinas do Madeira',
-      lados: [
-        { quem: 'TJRO', texto: 'Reformou sentença de improcedência e reconheceu indenização a pescadores com base em presunção de dano ambiental, segundo a notícia sobre o recurso no STJ.' },
-        { quem: 'STJ, 4ª Turma (REsp 2.102.646)', texto: 'Afastou indenização em caso ligado ao Complexo Hidrelétrico do Rio Madeira por falta de prova do dano e da atividade profissional.' },
-        { quem: 'STJ, 3ª Turma (REsp 2.238.459)', texto: 'Placar de 2 a 2 e pedido de vista em dezembro de 2025; notícia posterior informa que a Turma, por maioria, manteve a condenação das usinas.' }
-      ],
-      fontes: [
-        { rotulo: 'Migalhas, 09/12/2025', url: 'https://www.migalhas.com.br/quentes/446102/stj-analisa-se-usinas-no-rio-madeira-devem-indenizar-pescadores' },
-        { rotulo: 'Lex, Quarta Turma', url: 'https://www.lex.com.br/quarta-turma-nao-ve-prova-de-dano-e-afasta-indenizacao-por-obras-de-hidreletrica-no-rio-madeira/' },
-        { rotulo: 'Lex, Terceira Turma', url: 'https://www.lex.com.br/empresas-terao-de-indenizar-pescadores-prejudicados-pela-construcao-de-hidreletrica-no-rio-madeira/' }
-      ]
     }
   ],
 
@@ -532,9 +519,17 @@ window.OJSA = {
       tribunal: 'STJ',
       ref: 'REsp 2.238.459, 3ª Turma',
       texto: 'Recurso das empresas das usinas de Jirau e Santo Antônio contra acórdão do TJRO que reconheceu indenização a pescadores.',
-      relacao: 'Recurso contra decisão do TJRO cujo número de origem não foi divulgado.',
+      relacao: 'Recurso contra decisão do TJRO cujo número de origem não foi divulgado. Notícia posterior informa que a Turma, por maioria, manteve a condenação.',
       fichas: [],
       url: 'https://www.migalhas.com.br/quentes/446102/stj-analisa-se-usinas-no-rio-madeira-devem-indenizar-pescadores'
+    },
+    {
+      tribunal: 'STJ',
+      ref: 'REsp 2.102.646, 4ª Turma',
+      texto: 'Afastou indenização em caso ligado ao Complexo Hidrelétrico do Rio Madeira por falta de prova do dano e da atividade profissional.',
+      relacao: 'Precedente do STJ sobre a prova do dano; não é decisão do TJRO.',
+      fichas: [],
+      url: 'https://www.lex.com.br/quarta-turma-nao-ve-prova-de-dano-e-afasta-indenizacao-por-obras-de-hidreletrica-no-rio-madeira/'
     },
     {
       tribunal: 'STF',

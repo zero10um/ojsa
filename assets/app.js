@@ -321,7 +321,7 @@
     }
 
     main.innerHTML =
-      faixa('Decisões analisadas', 'Acórdãos do TJRO selecionados e analisados pela pesquisa, cada um com ficha e fontes.') +
+      faixa('Decisões analisadas', 'Acervo inicial de fichas sobre acórdãos do TJRO. Cada ficha indica suas fontes e o estágio de conferência.') +
       '<div class="miolo"><div class="consulta">' +
         '<form class="filtros" id="filtros" aria-label="Filtros">' +
           '<div><label for="f-q">Buscar</label><input id="f-q" type="search" name="q" value="' + esc(estado.q) + '" placeholder="Palavra, processo, local"></div>' +
@@ -431,6 +431,7 @@
 
       '<div class="miolo"><div class="ficha-grade">' +
       '<div>' +
+        '<p class="ficha-estagio"><strong>Estágio de conferência:</strong> ' + esc(f.conferencia || ('ficha do acervo inicial, elaborada com ' + f.fontes.map(function (s) { return s.tipo.charAt(0).toLowerCase() + s.tipo.slice(1); }).filter(function (v, i, a) { return a.indexOf(v) === i; }).join(' e ') + (f.processo ? ' e dados processuais do DataJud' : '') + '. O inteiro teor oficial do acórdão ainda não foi conferido.')) + '</p>' +
         '<div class="legenda-natureza" aria-label="Legenda"><span><i style="background:var(--mata)"></i>Fato documentado na fonte</span><span><i style="background:var(--ardosia)"></i>Síntese editorial</span><span><i style="background:var(--barranco)"></i>Inferência da pesquisa</span></div>' +
 
         '<section class="grupo"><h2>Conflito</h2>' +
@@ -641,7 +642,7 @@
       return '<section class="triagem triagem-pendente"><p class="rotulo-bloco">Anotação da pesquisa</p><h2>Triagem da pesquisa</h2>' +
         '<p>Este processo ainda não passou pela triagem da pesquisa.</p></section>';
     }
-    var rotulo = { preselecionado: 'Pré-selecionado', incluido: 'Incluído no acervo analisado', excluido: 'Excluído', duvida: 'Em dúvida' }[t.resultado];
+    var rotulo = { elegivel: 'Potencialmente elegível', preselecionado: 'Potencialmente elegível', incluido: 'Incluído no acervo analisado', excluido: 'Excluído', duvida: 'Em dúvida' }[t.resultado];
     function item(r, v) { return '<dt>' + r + '</dt><dd>' + esc(v) + '</dd>'; }
     return '<section class="triagem"><p class="rotulo-bloco">Anotação da pesquisa</p><div class="triagem-topo"><h2>Triagem da pesquisa</h2><span class="triagem-resultado triagem-' + t.resultado + '">' + rotulo + '</span></div>' +
       '<dl class="triagem-itens">' + item('Tema preliminar', t.grupo) + item('Documento lido', t.documento) +
@@ -820,10 +821,10 @@
 
     var panorama = P ?
       '<div class="destaques">' +
-        '<div><b>' + milhar(P.civeis) + '</b><span>processos cíveis</span></div>' +
-        '<div><b>' + milhar(P.criminais) + '</b><span>processos criminais</span></div>' +
-        '<div><b>' + milhar(P.total) + '</b><span>total no 2º grau</span></div>' +
+        '<div><b>' + milhar(P.civeis) + '</b><span>processos cíveis com assunto ambiental (universo de busca)</span></div>' +
+        (P.julgados != null ? '<div><b>' + milhar(P.julgados) + '</b><span>com julgamento registrado no DataJud</span></div>' : '') +
       '</div>' +
+      '<p class="nota" style="margin:4px 0 14px">Nenhum desses números equivale a conflitos comprovados ou a acórdãos analisados pela pesquisa.</p>' +
       '<div class="recorte"><span><b>Fonte:</b> ' + esc(P.fonte) + '</span><span><b>Extração:</b> ' + fmtMomento(P.extraidoEm) + '</span><span><b>Recorte:</b> 2º grau do TJRO, processos cíveis</span><span><a href="#/indicadores/criterios">Ver critérios</a></span></div>' +
       '<div class="paineis">' +
         painel('Classe processual', '', P.porClasse.slice(0, 8)) +

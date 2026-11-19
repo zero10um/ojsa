@@ -1,6 +1,6 @@
 // Em pauta: notícias sobre conflitos e justiça socioambiental na Amazônia, de outras fontes.
-// Só entram notícias verificáveis, com data, fonte e link. Foto apenas de órgãos públicos, com crédito;
-// notícias da imprensa aparecem com capa própria do site (as fotos dos jornais têm direitos autorais).
+// Só entram notícias verificáveis, com data, fonte e link. Fotos só com imagem própria, licença ou autorização
+// verificável; sem isso, o cartão traz capa própria do site, resumo e link (crédito não substitui autorização).
 // "ordem" (AAAA-MM-DD) define a ordem, do mais recente para o mais antigo.
 
 window.OJSA_PAUTA = [
@@ -21,16 +21,12 @@ window.OJSA_PAUTA = [
     titulo: 'STF faz inspeção judicial na Reserva Extrativista Jaci-Paraná',
     texto: 'A inspeção, determinada pelo ministro Cristiano Zanin na ADI 7819, levantou informações sobre o território. A ação questiona a Lei Complementar estadual 1.274/2025, que criou programa de regularização ambiental para a reserva, com regularização de ocupações, anistia de multas e extinção de processos judiciais.',
     link: 'https://noticias.stf.jus.br/postsnoticias/stf-realiza-inspecao-judicial-na-reserva-extrativista-jaci-parana-em-rondonia/',
-    foto: 'https://noticias.stf.jus.br/wp-content/uploads/2026/05/WhatsApp-Image-2026-05-07-at-17.21.13-e1778186708257.jpeg',
-    credito: 'Foto: Comunicação/TJRO, publicada pelo STF'
   },
   {
     ordem: '2026-04-29', quando: '29/04/2026', fonte: 'Ministério Público Federal', tipo: 'justica',
     titulo: 'Justiça determina plano contra o comércio clandestino de mercúrio no porto de Guajará-Mirim',
     texto: 'A pedido do MPF, a Justiça Federal determinou que a União e a Antaq elaborem, em 90 dias, um plano de fiscalização para o porto fluvial de Guajará-Mirim, por onde, segundo o MPF, entra mercúrio vindo da Bolívia e destinado a garimpos ilegais na Amazônia.',
     link: 'https://www.mpf.mp.br/o-mpf/unidades/pr-ro/noticias/mpf-obtem-decisao-judicial-para-combater-comercio-clandestino-de-mercurio-no-porto-de-guajara-mirim-ro',
-    foto: 'https://www.mpf.mp.br/o-mpf/unidades/pr-ro/noticias/mpf-obtem-decisao-judicial-para-combater-comercio-clandestino-de-mercurio-no-porto-de-guajara-mirim-ro/@@images/image-800-d724a227ea6d03b173b95034bdf7e189.jpeg',
-    credito: 'Foto: Dnit, publicada pelo MPF'
   },
   {
     ordem: '2026-04-16', quando: '16/04/2026', fonte: 'Ministério Público Federal', tipo: 'justica',

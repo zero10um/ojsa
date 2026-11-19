@@ -660,7 +660,7 @@ a.selo-eixo:hover { color: var(--mata); text-decoration: none; background: var(-
 .rotulo-bloco { font-size: 12px; font-weight: 500; color: var(--igapo); letter-spacing: .03em; margin: 0 0 4px; }
 .bloco-publicacoes { background: #fff; border: 1px solid var(--linha); padding: 18px 20px !important; margin-bottom: 24px; }
 .grupo h2, .triagem h2 { font-size: 20px; font-weight: 400; }
-.triagem-preselecionado { background: #E6EFF8; color: #1F4F78; }
+.triagem-preselecionado, .triagem-elegivel { background: #E6EFF8; color: #1F4F78; }
 .atalhos-metodo { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
 .atalhos-metodo a { display: block; padding: 16px 18px; background: #fff; border: 1px solid var(--linha); border-top: 4px solid var(--folha); border-radius: var(--raio); text-decoration: none; }
 .atalhos-metodo a:hover { border-top-color: var(--mata); background: #F7F9F8; }
@@ -691,3 +691,6 @@ a.selo-eixo:hover { color: var(--mata); text-decoration: none; background: var(-
 
 /* mapas: introdução sem o aviso logo abaixo */
 .mapas-explica { margin-bottom: 22px; }
+
+/* estágio de conferência de cada ficha */
+.ficha-estagio { font-size: 14px; line-height: 1.55; background: var(--barranco-claro); border-left: 3px solid var(--barranco); padding: 10px 14px; margin: 0 0 18px; color: #4a3413; }
