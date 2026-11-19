@@ -296,6 +296,566 @@
         '</section>' +
 
       '</div>';
+
+    ligarMapa();
+  }
+
+  // Decisões judiciais: consulta com filtros
+  function telaDecisoes(qs) {
+    var estado = { q: qs.get('q') || '', eixo: qs.get('eixo') || '', municipio: qs.get('municipio') || '', classe: qs.get('classe') || '', orgaos: qs.getAll('orgao'), resultados: qs.getAll('resultado') };
+    var orgaos = contar(D.fichas, function (f) { return f.orgao; });
+    var resultados = contar(D.fichas, function (f) { return f.resultado; });
+    var classes = contar(D.fichas, function (f) { return f.classe; });
+    var municipios = contar(D.fichas, function (f) { return f.municipio ? f.municipio.nome + '|' + f.municipio.id : null; });
+
+    function opcoes(lista, atual, rotTodos) {
+      return '<option value="">' + rotTodos + '</option>' + lista.map(function (o) {
+        return '<option value="' + esc(o.v) + '"' + (o.v === atual ? ' selected' : '') + '>' + esc(o.rot) + '</option>';
+      }).join('');
+    }
+    function caixas(nome, lista, marcados) {
+      return lista.map(function (o, i) {
+        var id = nome + '-' + i;
+        return '<div class="opcao"><input type="checkbox" id="' + id + '" name="' + nome + '" value="' + esc(o.rot) + '"' + (marcados.indexOf(o.rot) > -1 ? ' checked' : '') + '><label for="' + id + '">' + esc(o.rot) + ' (' + o.n + ')</label></div>';
+      }).join('');
+    }
+
+    main.innerHTML =
+      faixa('Decisões analisadas', 'Acórdãos do TJRO selecionados e analisados pela pesquisa, cada um com ficha e fontes.') +
+      '<div class="miolo"><div class="consulta">' +
+        '<form class="filtros" id="filtros" aria-label="Filtros">' +
+          '<div><label for="f-q">Buscar</label><input id="f-q" type="search" name="q" value="' + esc(estado.q) + '" placeholder="Palavra, processo, local"></div>' +
+          '<div><label for="f-eixo">Eixo temático</label><select id="f-eixo" name="eixo">' + opcoes(D.eixos.map(function (e) { return { v: e.id, rot: e.curto }; }), estado.eixo, 'Todos os eixos') + '</select></div>' +
+          '<div><label for="f-mun">Município</label><select id="f-mun" name="municipio">' + opcoes(municipios.map(function (m) { var p = m.rot.split('|'); return { v: p[1], rot: p[0] }; }), estado.municipio, 'Todos os municípios') + '</select></div>' +
+          '<div><label for="f-classe">Classe processual</label><select id="f-classe" name="classe">' + opcoes(classes.map(function (c) { return { v: c.rot, rot: c.rot }; }), estado.classe, 'Todas as classes') + '</select></div>' +
+          '<fieldset><legend>Órgão julgador</legend>' + caixas('orgao', orgaos, estado.orgaos) + '</fieldset>' +
+          '<fieldset><legend>Resultado</legend>' + caixas('resultado', resultados, estado.resultados) + '</fieldset>' +
+          '<button type="button" class="limpar" id="limpar">Limpar filtros</button>' +
+        '</form>' +
+        '<div><p class="contagem" id="contagem" aria-live="polite"></p><ul class="lista-decisoes" id="resultados"></ul></div>' +
+      '</div></div>';
+
+    var form = document.getElementById('filtros');
+    function ler() {
+      estado.q = form.q.value.trim();
+      estado.eixo = form.eixo.value;
+      estado.municipio = form.municipio.value;
+      estado.classe = form.classe.value;
+      estado.orgaos = [].map.call(form.querySelectorAll('input[name="orgao"]:checked'), function (i) { return i.value; });
+      estado.resultados = [].map.call(form.querySelectorAll('input[name="resultado"]:checked'), function (i) { return i.value; });
+    }
+    function atualizar() {
+      var termo = normal(estado.q);
+      var lista = D.fichas.filter(function (f) {
+        if (estado.eixo && f.eixos.indexOf(estado.eixo) < 0) return false;
+        if (estado.municipio && (!f.municipio || f.municipio.id !== estado.municipio)) return false;
+        if (estado.classe && f.classe !== estado.classe) return false;
+        if (estado.orgaos.length && estado.orgaos.indexOf(f.orgao) < 0) return false;
+        if (estado.resultados.length && estado.resultados.indexOf(f.resultado) < 0) return false;
+        if (termo) {
+          var alvo = [f.titulo, f.processo, f.partes, f.territorio, f.subtema, f.classe, f.orgao, f.relatoria, f.municipio && f.municipio.nome, f.sintese.t]
+            .concat(f.normas, f.direitos, f.fundamentos.map(function (x) { return x.t; }), f.eixos.map(function (e) { return eixo(e).nome; })).join(' ');
+          if (normal(alvo).indexOf(termo) < 0) return false;
+        }
+        return true;
+      }).sort(porData);
+
+      document.getElementById('contagem').textContent = lista.length === D.fichas.length
+        ? plural(lista.length, 'decisão no acervo.', 'decisões no acervo.')
+        : plural(lista.length, 'decisão encontrada', 'decisões encontradas') + ' de ' + D.fichas.length + '.';
+      document.getElementById('resultados').innerHTML = lista.length ? lista.map(itemDecisao).join('')
+        : '<li class="vazio">Nenhuma decisão encontrada. Tente outro filtro.</li>';
+
+      var p = new URLSearchParams();
+      ['q', 'eixo', 'municipio', 'classe'].forEach(function (k) { if (estado[k]) p.set(k, estado[k]); });
+      estado.orgaos.forEach(function (o) { p.append('orgao', o); });
+      estado.resultados.forEach(function (r) { p.append('resultado', r); });
+      var novo = '#/decisoes' + (p.toString() ? '?' + p.toString() : '');
+      if (location.hash !== novo) history.replaceState(null, '', novo);
+    }
+    form.addEventListener('input', function () { ler(); atualizar(); });
+    form.addEventListener('change', function () { ler(); atualizar(); });
+    form.addEventListener('submit', function (e) { e.preventDefault(); });
+    document.getElementById('limpar').addEventListener('click', function () {
+      [].forEach.call(form.querySelectorAll('select'), function (s) { s.value = ''; });
+      [].forEach.call(form.querySelectorAll('input'), function (i) { if (i.type === 'checkbox') i.checked = false; else i.value = ''; });
+      ler(); atualizar();
+    });
+    atualizar();
+  }
+
+  // Andamento oficial no DataJud
+  function htmlAndamento(registros, completo) {
+    if (!registros || !registros.length) return '<p class="carregando">Processo não encontrado na API Pública do DataJud.</p>';
+    return registros.map(function (r) {
+      var marcos = r.movimentos.filter(function (m) { return MARCOS.test(m.nome); });
+      var lista = completo ? r.movimentos : (marcos.length ? marcos : r.movimentos).slice(0, 7);
+      return '<p class="grau-titulo">' + (r.grau === 'G2' ? '2º grau' : r.grau === 'G1' ? '1º grau' : esc(r.grau)) + ': ' + esc(r.classe) +
+        '<span>' + esc(r.orgao) + '</span><span>' + esc(r.assuntos.join('; ')) + '</span></p>' +
+        '<ul class="andamento' + (completo ? ' andamento-completo' : '') + '">' + lista.map(function (m) {
+          return '<li><time>' + esc(fmt(m.data)) + '</time><span class="' + (MARCOS.test(m.nome) ? 'marco' : '') + '">' + esc(m.nome) + (m.complemento ? ' (' + esc(m.complemento) + ')' : '') + '</span></li>';
+        }).join('') + '</ul>';
+    }).join('') + '<p class="nota" style="margin-top:10px">Fonte: API Pública do DataJud (CNJ). Última atualização do registro: ' + esc(fmt(registros[0].atualizacao)) + '.</p>';
+  }
+
+  function carregarAndamento(f) {
+    var alvo = document.getElementById('andamento');
+    if (!alvo) return;
+    if (!f.processo) { alvo.innerHTML = '<p class="carregando">A fonte não divulgou o número do processo; por isso não há consulta ao DataJud.</p>'; return; }
+    var copia = DJ.processos && DJ.processos[f.processo];
+    if (copia) alvo.innerHTML = htmlAndamento(copia);
+    if (!AO_VIVO) { if (!copia) alvo.innerHTML = semDataJud(); return; }
+    fetch('/api/v1/processos/' + encodeURIComponent(f.processo)).then(function (r) { return r.ok ? r.json() : Promise.reject(); })
+      .then(function (dados) { var el = document.getElementById('andamento'); if (el) el.innerHTML = htmlAndamento(dados.registros); })
+      .catch(function () { var el = document.getElementById('andamento'); if (el && !copia) el.innerHTML = '<p class="carregando">DataJud indisponível agora. Tente mais tarde.</p>'; });
+  }
+
+  function telaFicha(id) {
+    var f = ficha(id);
+    if (!f) return telaNaoEncontrada();
+    var t = f.monitoramento.tendencia ? tendencia(f.monitoramento.tendencia) : null;
+
+    function dd(rotulo, valor, numero) {
+      if (!valor) return '<dt>' + rotulo + '</dt><dd class="ausente">Não informado na fonte</dd>';
+      return '<dt>' + rotulo + '</dt><dd' + (numero ? ' class="num"' : '') + '>' + esc(valor) + '</dd>';
+    }
+    function dim(nome, a) {
+      return '<div class="dimensao"><span class="dimensao-nome">' + nome + '</span>' + (a ? afirmacao(a) : '<span class="dimensao-vazia">Sem indício na fonte consultada.</span>') + '</div>';
+    }
+    function lista(itens) { return '<ul>' + itens.map(function (i) { return '<li>' + esc(i) + '</li>'; }).join('') + '</ul>'; }
+
+    main.innerHTML =
+      faixa(esc(f.titulo), '', '<a href="#/decisoes">Decisões analisadas</a> / ' + esc(f.classe) + ' ' + esc(nomeProcesso(f)),
+        '<div class="ficha-selos"><span class="selo">' + esc(f.resultado) + '</span>' +
+        f.eixos.map(function (e) { return '<a class="selo" href="#/temas/' + e + '">' + esc(eixo(e).curto) + '</a>'; }).join('') + '</div>') +
+
+      '<div class="miolo"><div class="ficha-grade">' +
+      '<div>' +
+        '<div class="legenda-natureza" aria-label="Legenda"><span><i style="background:var(--mata)"></i>Fato documentado na fonte</span><span><i style="background:var(--ardosia)"></i>Síntese editorial</span><span><i style="background:var(--barranco)"></i>Inferência da pesquisa</span></div>' +
+
+        '<section class="grupo"><h2>Conflito</h2>' +
+          '<h3>Local</h3><p>' + esc(f.territorio) + (f.municipio ? ', ' + esc(f.municipio.nome) : '') + '</p>' +
+          '<h3>Subtema</h3><p>' + esc(f.subtema) + '</p>' +
+          '<h3>Síntese dos fatos</h3>' + afirmacao(f.sintese) +
+          '<h3>Atores</h3>' + lista(f.atores) +
+          '<h3>Grupos atingidos</h3>' + lista(f.grupos) +
+        '</section>' +
+
+        '<section class="grupo"><h2>Aspectos jurídicos</h2>' +
+          '<h3>Partes</h3><p>' + esc(f.partes) + '</p>' +
+          '<h3>Pedido</h3>' + afirmacao(f.pedidos) +
+          '<h3>Direitos em discussão</h3>' + lista(f.direitos) +
+          '<h3>Fundamentos da decisão</h3>' + f.fundamentos.map(afirmacao).join('') +
+          '<h3>Fundamentos normativos</h3><ul class="etiquetas">' + f.normas.map(function (n) { return '<li class="selo selo-eixo">' + esc(n) + '</li>'; }).join('') + '</ul>' +
+          (f.precedentes.length ? '<h3>Precedentes invocados</h3>' + f.precedentes.map(afirmacao).join('') : '') +
+          '<h3>Resultado</h3><p><strong>' + esc(f.resultado) + '.</strong> ' + esc(f.dispositivo) + '</p>' +
+          '<h3>Providências determinadas</h3>' + lista(f.providencias) +
+        '</section>' +
+
+        '<section class="grupo"><h2>Justiça socioambiental</h2>' +
+          '<p class="nota">Leitura da pesquisa sobre a decisão.</p>' +
+          '<div class="dimensoes">' + dim('Distributiva', f.justica.distribuicao) + dim('Reconhecimento', f.justica.reconhecimento) + dim('Participação', f.justica.participacao) + '</div>' +
+        '</section>' +
+
+        '<section class="grupo"><h2>Monitoramento</h2>' + afirmacao(f.monitoramento) +
+          (t ? '<p style="margin-top:10px">Tendência relacionada: <a href="#/radar/tendencias">' + esc(t.titulo) + '</a> (' + esc(grau(t.grau).nome.toLowerCase()) + ').</p>' : '') +
+        '</section>' +
+
+        '<section class="grupo"><h2>Fontes e rastreabilidade</h2>' +
+          (f.trecho ? '<h3>Trecho citado na fonte</h3><blockquote class="trecho">"' + esc(f.trecho) + '"<cite>' + esc(f.fontes[0].veiculo) + ', ' + esc(f.fontes[0].data) + '</cite></blockquote>' : '') +
+          '<h3>Fontes</h3><ul class="fontes-lista">' + f.fontes.map(function (s) {
+            return '<li>' + esc(s.tipo) + ': <a href="' + esc(s.url) + '" target="_blank" rel="noopener">' + esc(s.veiculo) + '</a>, ' + esc(s.data) + '</li>';
+          }).join('') + (f.processo ? '<li>Dados processuais: API Pública do DataJud, Conselho Nacional de Justiça</li>' : '') + '</ul>' +
+          '<p class="nota" style="margin-top:12px">Ficha registrada no Observatório em ' + D.atualizadoEm + '. Correções são registradas nesta seção.</p>' +
+        '</section>' +
+      '</div>' +
+
+      '<aside class="ficha-lado">' +
+        '<section class="quadro" aria-label="Identificação"><h2>Identificação</h2><dl class="dados">' +
+          dd('Processo', f.processo, true) +
+          (f.processosConexos ? dd('Julgado com', f.processosConexos.join(', '), true) : '') +
+          dd('Classe', f.classe) + dd('Órgão julgador', f.orgao) + dd('Relatoria', f.relatoria) +
+          dd(f.tipoData, fmt(f.dataReferencia)) + dd('Origem', f.origem) +
+          dd('Local', f.municipio ? f.municipio.nome : f.territorio) +
+        '</dl>' + (f.processo ? '<a class="botao" href="#/processos/' + f.processo + '">Ver processo, andamento e publicações</a>' : '') +
+        '<a class="botao botao-claro" href="' + CONSULTA_TJRO + '" target="_blank" rel="noopener">Jurisprudência do TJRO</a></section>' +
+        '<section class="quadro"><h2>Andamento no DataJud</h2><div id="andamento">' + carregandoHtml('Consultando o DataJud') + '</div></section>' +
+      '</aside>' +
+      '</div></div>';
+
+    carregarAndamento(f);
+  }
+
+  // Processos ambientais do TJRO (lista completa do DataJud)
+  function itemProcesso(p) {
+    var ficha = fichaDoProcesso(p.n);
+    return '<li class="processo"><a class="processo-link" href="#/processos/' + p.n + '">' +
+      '<span><span class="processo-num">' + esc(p.n) + '</span>' + (ficha ? '<span class="selo selo-ficha">Ficha analítica</span>' : '') +
+      '<span class="processo-meta">' + esc([p.c, p.o, p.co ? 'origem ' + p.co : null].filter(Boolean).join(', ')) + '</span>' +
+      '<span class="processo-assuntos">' + esc(p.a.join('; ')) + '</span></span>' +
+      '<span class="processo-lado">' + (p.j ? '<span class="julgado">' + esc(rotRes(p.j[1])) + '</span><time>julgado em ' + esc(fmt(p.j[0])) + '</time>' : '<span>Sem julgamento registrado</span>') +
+      (p.u ? '<time>última movimentação ' + esc(fmt(p.u[0])) + '</time>' : '') + '</span></a></li>';
+  }
+
+  function telaProcessos(qs) {
+    var estado = {
+      q: qs.get('q') || '', esfera: qs.get('esfera') || 'civel', classe: qs.get('classe') || '', assunto: qs.get('assunto') || '',
+      comarca: qs.get('comarca') || '', ano: qs.get('ano') || '', situacao: qs.get('situacao') || '', resultado: qs.get('resultado') || '', ordem: qs.get('ordem') || 'recentes'
+    };
+    var mostrar = 30;
+    var P = DJ.panorama;
+
+    main.innerHTML =
+      faixa('Processos do 2º grau com assunto ambiental', 'Registros do TJRO identificados no DataJud. A presença de assunto ambiental no cadastro não significa que o processo integra o acervo analisado pela pesquisa.' + (P ? '<span class="faixa-fonte">Fonte: API Pública do DataJud (CNJ). Atualizado em ' + fmtMomento(P.extraidoEm) + '.</span>' : '')) +
+      '<div class="miolo"><div class="consulta"><form class="filtros" id="filtros-proc" aria-label="Filtros">' + carregandoHtml('Preparando os filtros') + '</form>' +
+      '<div id="lista-proc">' + carregandoHtml('Carregando os processos do DataJud') + '</div></div></div>';
+
+    carregarProcessos().then(function (dados) {
+      var todos = dados.processos;
+      var form = document.getElementById('filtros-proc');
+      if (!form) return;
+      function base() { return todos.filter(function (p) { return estado.esfera === 'todas' || (estado.esfera === 'criminal' ? p.cr : !p.cr); }); }
+      function opcoes(lista, atual, rot) {
+        return '<option value="">' + rot + '</option>' + lista.map(function (o) { return '<option value="' + esc(o.rot) + '"' + (o.rot === atual ? ' selected' : '') + '>' + esc(o.rot) + ' (' + milhar(o.n) + ')</option>'; }).join('');
+      }
+      function montarFiltros() {
+        var b = base();
+        form.innerHTML =
+          '<div><label for="p-q">Buscar</label><input id="p-q" type="search" name="q" value="' + esc(estado.q) + '" placeholder="Número, assunto, comarca, gabinete"></div>' +
+          '<fieldset><legend>Área</legend>' + [['civel', 'Cível'], ['criminal', 'Criminal'], ['todas', 'Todas']].map(function (e) {
+            return '<div class="opcao"><input type="radio" name="esfera" id="es-' + e[0] + '" value="' + e[0] + '"' + (estado.esfera === e[0] ? ' checked' : '') + '><label for="es-' + e[0] + '">' + e[1] + '</label></div>';
+          }).join('') + '</fieldset>' +
+          '<div><label for="p-sit">Situação</label><select id="p-sit" name="situacao"><option value="">Todas</option><option value="julgado"' + (estado.situacao === 'julgado' ? ' selected' : '') + '>Com julgamento registrado</option><option value="sem-julgamento"' + (estado.situacao === 'sem-julgamento' ? ' selected' : '') + '>Sem julgamento registrado</option></select></div>' +
+          '<div><label for="p-res">Resultado do último julgamento</label><select id="p-res" name="resultado"><option value="">Todos os resultados</option>' + contar(b, function (p) { return p.j && p.j[1]; }).map(function (o) { return '<option value="' + esc(o.rot) + '"' + (o.rot === estado.resultado ? ' selected' : '') + '>' + esc(rotRes(o.rot)) + ' (' + milhar(o.n) + ')</option>'; }).join('') + '</select></div>' +
+          '<div><label for="p-ass">Assunto</label><select id="p-ass" name="assunto">' + opcoes(contar(b, function (p) { return p.a; }).slice(0, 40), estado.assunto, 'Todos os assuntos') + '</select></div>' +
+          '<div><label for="p-com">Comarca de origem</label><select id="p-com" name="comarca">' + opcoes(contar(b, function (p) { return p.co; }), estado.comarca, 'Todas as comarcas') + '</select></div>' +
+          '<div><label for="p-cla">Classe</label><select id="p-cla" name="classe">' + opcoes(contar(b, function (p) { return p.c; }), estado.classe, 'Todas as classes') + '</select></div>' +
+          '<div><label for="p-ano">Chegada ao 2º grau</label><select id="p-ano" name="ano">' + opcoes(contar(b, function (p) { return p.aj && p.aj.slice(0, 4); }).sort(function (x, y) { return y.rot.localeCompare(x.rot); }), estado.ano, 'Todos os anos') + '</select></div>' +
+          '<div><label for="p-ord">Ordenar por</label><select id="p-ord" name="ordem">' +
+            [['recentes', 'Movimentação mais recente'], ['julgamento', 'Julgamento mais recente'], ['chegada', 'Chegada mais recente'], ['antigos', 'Chegada mais antiga']].map(function (o) { return '<option value="' + o[0] + '"' + (estado.ordem === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') +
+          '</select></div>' +
+          '<button type="button" class="limpar" id="limpar-proc">Limpar filtros</button>';
+      }
+
+      function filtrar() {
+        var termo = normal(estado.q), digitos = estado.q.replace(/\D/g, '');
+        var lista = base().filter(function (p) {
+          if (estado.classe && p.c !== estado.classe) return false;
+          if (estado.assunto && p.a.indexOf(estado.assunto) < 0) return false;
+          if (estado.comarca && p.co !== estado.comarca) return false;
+          if (estado.ano && !(p.aj && p.aj.indexOf(estado.ano) === 0)) return false;
+          if (estado.situacao === 'julgado' && !p.j) return false;
+          if (estado.situacao === 'sem-julgamento' && p.j) return false;
+          if (estado.resultado && !(p.j && p.j[1] === estado.resultado)) return false;
+          if (termo) {
+            var porNumero = digitos.length >= 7 && p.n.replace(/\D/g, '').indexOf(digitos) > -1;
+            if (!porNumero && normal([p.c, p.o, p.co, p.a.join(' ')].join(' ')).indexOf(termo) < 0) return false;
+          }
+          return true;
+        });
+        var chave = { recentes: function (p) { return p.u ? p.u[0] : ''; }, julgamento: function (p) { return p.j ? p.j[0] : ''; }, chegada: function (p) { return p.aj || ''; }, antigos: function (p) { return p.aj || ''; } }[estado.ordem];
+        lista.sort(function (a, b) { return estado.ordem === 'antigos' ? chave(a).localeCompare(chave(b)) : chave(b).localeCompare(chave(a)); });
+        return lista;
+      }
+
+      function desenhar() {
+        var lista = filtrar();
+        var julgados = lista.filter(function (p) { return p.j; });
+        var todosRes = contar(julgados, function (p) { return p.j[1]; });
+        var resultados = todosRes.slice(0, 6), outros = todosRes.slice(6);
+        var nOutros = outros.reduce(function (s, o) { return s + o.n; }, 0);
+        document.getElementById('lista-proc').innerHTML =
+          '<div class="resumo-filtro" aria-live="polite"><span><b>' + milhar(lista.length) + '</b> ' + (lista.length === 1 ? 'processo' : 'processos') + ' com assunto ambiental</span><span><b>' + milhar(julgados.length) + '</b> com julgamento registrado no DataJud</span></div>' +
+          (resultados.length ? '<p class="resultados-titulo">Resultado do último julgamento registrado em cada processo</p>' : '') +
+          (resultados.length ? '<div class="resultados-mini" aria-label="Resultados dos julgamentos">' + resultados.map(function (r) {
+            return '<button type="button" data-resultado="' + esc(r.rot) + '" aria-pressed="' + (estado.resultado === r.rot) + '">' + esc(rotRes(r.rot)) + ': ' + milhar(r.n) + ' (' + Math.round(r.n / julgados.length * 100) + '%)</button>';
+          }).join('') + (nOutros ? '<span class="resultado-outros" title="' + esc(outros.map(function (o) { return rotRes(o.rot) + ': ' + o.n; }).join('; ')) + '">Outros resultados (' + outros.length + ' categorias): ' + milhar(nOutros) + '</span>' : '') + '</div>' : '') +
+          (lista.length ? '<ul class="processos">' + lista.slice(0, mostrar).map(itemProcesso).join('') + '</ul>' : '<p class="vazio">Nenhum processo encontrado. Tente outro filtro.</p>') +
+          '<div class="mais">' + (lista.length > mostrar ? '<button type="button" class="botao" id="mostrar-mais">Mostrar mais ' + Math.min(30, lista.length - mostrar) + ' de ' + milhar(lista.length - mostrar) + '</button>' : '') +
+          (lista.length ? '<button type="button" class="botao botao-claro" id="baixar-csv">Baixar planilha (CSV)</button>' : '') +
+          '<span class="nota">Fonte: API Pública do DataJud (CNJ).</span></div>';
+
+        var mais = document.getElementById('mostrar-mais');
+        if (mais) mais.addEventListener('click', function () { mostrar += 30; desenhar(); });
+        var csv = document.getElementById('baixar-csv');
+        if (csv) csv.addEventListener('click', function () { baixarCsv(lista); });
+        [].forEach.call(document.querySelectorAll('.resultados-mini button'), function (b) {
+          b.addEventListener('click', function () {
+            estado.resultado = estado.resultado === b.getAttribute('data-resultado') ? '' : b.getAttribute('data-resultado');
+            estado.situacao = estado.resultado ? 'julgado' : estado.situacao;
+            mostrar = 30; montarFiltros(); desenhar();
+          });
+        });
+
+        var p = new URLSearchParams();
+        Object.keys(estado).forEach(function (k) { if (estado[k] && !(k === 'esfera' && estado[k] === 'civel') && !(k === 'ordem' && estado[k] === 'recentes')) p.set(k, estado[k]); });
+        var novo = '#/processos' + (p.toString() ? '?' + p.toString() : '');
+        if (location.hash !== novo) history.replaceState(null, '', novo);
+      }
+
+      function ler() {
+        var esferaAntes = estado.esfera;
+        estado.q = form.q.value.trim();
+        estado.esfera = (form.querySelector('input[name="esfera"]:checked') || {}).value || 'civel';
+        ['situacao', 'resultado', 'assunto', 'comarca', 'classe', 'ano', 'ordem'].forEach(function (k) { estado[k] = form[k].value; });
+        mostrar = 30;
+        if (esferaAntes !== estado.esfera) { ['resultado', 'assunto', 'comarca', 'classe', 'ano'].forEach(function (k) { estado[k] = ''; }); montarFiltros(); }
+      }
+
+      montarFiltros();
+      form.addEventListener('input', function (e) { if (e.target.name === 'q') { ler(); desenhar(); } });
+      form.addEventListener('change', function () { ler(); desenhar(); });
+      form.addEventListener('submit', function (e) { e.preventDefault(); });
+      form.addEventListener('click', function (e) {
+        if (e.target.id !== 'limpar-proc') return;
+        estado = { q: '', esfera: 'civel', classe: '', assunto: '', comarca: '', ano: '', situacao: '', resultado: '', ordem: 'recentes' };
+        mostrar = 30; montarFiltros(); desenhar();
+      });
+      desenhar();
+    }).catch(function () {
+      var el = document.getElementById('lista-proc');
+      if (el) el.innerHTML = semDataJud();
+      var f = document.getElementById('filtros-proc');
+      if (f) f.innerHTML = '';
+    });
+  }
+
+  function baixarCsv(lista) {
+    var linhas = [['numero', 'classe', 'gabinete', 'comarca_origem', 'assuntos', 'chegada_2o_grau', 'ultima_movimentacao', 'data_ultima_movimentacao', 'ultimo_julgamento', 'data_julgamento']];
+    lista.forEach(function (p) {
+      linhas.push([p.n, p.c, p.o, p.co, p.a.join(' | '), p.aj || '', p.u ? p.u[1] : '', p.u ? p.u[0] : '', p.j ? p.j[1] : '', p.j ? p.j[0] : '']);
+    });
+    var texto = '﻿' + linhas.map(function (l) { return l.map(function (c) { return '"' + String(c == null ? '' : c).replace(/"/g, '""') + '"'; }).join(';'); }).join('\r\n');
+    var url = URL.createObjectURL(new Blob([texto], { type: 'text/csv;charset=utf-8' }));
+    var a = document.createElement('a');
+    a.href = url; a.download = 'ojsa-processos-ambientais-tjro.csv';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
+  }
+
+  // Triagem da pesquisa: se o acórdão do processo entra na análise qualitativa (assets/triagem.js)
+  function htmlTriagem(numero) {
+    var T = window.OJSA_TRIAGEM;
+    var t = T && T.processos[numero];
+    if (!t) {
+      return '<section class="triagem triagem-pendente"><p class="rotulo-bloco">Anotação da pesquisa</p><h2>Triagem da pesquisa</h2>' +
+        '<p>Este processo ainda não passou pela triagem da pesquisa.</p></section>';
+    }
+    var rotulo = { preselecionado: 'Pré-selecionado', incluido: 'Incluído no acervo analisado', excluido: 'Excluído', duvida: 'Em dúvida' }[t.resultado];
+    function item(r, v) { return '<dt>' + r + '</dt><dd>' + esc(v) + '</dd>'; }
+    return '<section class="triagem"><p class="rotulo-bloco">Anotação da pesquisa</p><div class="triagem-topo"><h2>Triagem da pesquisa</h2><span class="triagem-resultado triagem-' + t.resultado + '">' + rotulo + '</span></div>' +
+      '<dl class="triagem-itens">' + item('Tema preliminar', t.grupo) + item('Documento lido', t.documento) +
+      item('Elemento ambiental', t.ambiental) + item('Elemento social', t.social) + item('Por que foi selecionado para triagem', t.motivo) + item('Situação da análise', t.situacao) + '</dl>' +
+      '<p class="nota">Triagem de ' + esc(t.data) + '.</p></section>';
+  }
+
+  // Página de um processo: dados do DataJud, andamento completo e publicações oficiais
+  function telaProcesso(numeroRota) {
+    var numero = formatarNumero(numeroRota);
+    var ficha = fichaDoProcesso(numero);
+    main.innerHTML =
+      faixa('Processo ' + esc(numero), 'Dados do DataJud e do Diário de Justiça Eletrônico Nacional (CNJ).', '<a href="#/processos">Processos judiciais</a> / ' + esc(numero)) +
+      '<div class="miolo"><div class="ficha-grade"><div>' +
+        (ficha ? '<div class="ressalva" style="margin-bottom:20px"><strong>Este processo tem ficha analítica.</strong> <a href="#/decisoes/' + ficha.id + '">' + esc(ficha.titulo) + '</a></div>' : '') +
+        htmlTriagem(numero) +
+        '<section class="grupo bloco-publicacoes"><p class="rotulo-bloco">Publicações oficiais</p><h2>Atos publicados no Diário de Justiça</h2>' +
+          '<p class="nota">Publicações deste processo no Diário de Justiça Eletrônico Nacional. Cada item é um ato publicado, não o inteiro teor de uma decisão analisada pela pesquisa. Quando o tribunal disponibiliza, há link para o documento no PJe.</p>' +
+          '<div id="publicacoes">' + carregandoHtml('Consultando o Diário de Justiça Eletrônico Nacional') + '</div></section>' +
+        '<section class="grupo"><p class="rotulo-bloco">Dados do processo</p><h2>Andamento no DataJud</h2><div id="andamento-completo">' + carregandoHtml('Consultando o DataJud, que pode levar até 30 segundos') + '</div></section>' +
+      '</div>' +
+      '<aside class="ficha-lado"><section class="quadro"><p class="rotulo-bloco">Dados do processo</p><h2>Identificação no DataJud</h2><div id="ident-proc">' + carregandoHtml('Carregando') + '</div>' +
+        '<button type="button" class="botao" id="copiar-num">Copiar número do processo</button>' +
+        '<a class="botao botao-claro" href="https://pjesg.tjro.jus.br/consulta/ConsultaPublica/listView.seam" target="_blank" rel="noopener">Consulta pública PJe 2º grau</a>' +
+        '<a class="botao botao-claro" href="https://pjepg.tjro.jus.br/consulta/ConsultaPublica/listView.seam" target="_blank" rel="noopener">Consulta pública PJe 1º grau</a>' +
+        '<p class="nota" style="margin-top:10px">Na consulta pública do PJe, cole o número copiado.</p></section></aside>' +
+      '</div></div>';
+
+    document.getElementById('copiar-num').addEventListener('click', function () {
+      var b = this;
+      function ok() { b.textContent = 'Número copiado'; setTimeout(function () { b.textContent = 'Copiar número do processo'; }, 2000); }
+      if (navigator.clipboard) navigator.clipboard.writeText(numero).then(ok, function () { b.textContent = numero; });
+      else b.textContent = numero;
+    });
+
+    carregarProcessos().then(function (dados) {
+      var el = document.getElementById('ident-proc');
+      if (!el) return;
+      var p = dados.processos.filter(function (x) { return x.n === numero; })[0];
+      function linha(r, v) { return v ? '<dt>' + r + '</dt><dd>' + esc(v) + '</dd>' : ''; }
+      el.innerHTML = p ? '<dl class="dados">' + linha('Classe', p.c) + linha(/vara|juizado/i.test(p.o || '') ? 'Unidade de origem (informada no DataJud)' : 'Gabinete no 2º grau', p.o) + linha('Comarca de origem', p.co) + linha('Assuntos', p.a.join('; ')) +
+        linha('Chegada ao 2º grau', fmt(p.aj)) + linha('Último julgamento registrado', p.j ? rotRes(p.j[1]) + ', ' + fmt(p.j[0]) : 'Sem julgamento registrado') + linha('Última movimentação', p.u ? p.u[1] + ', ' + fmt(p.u[0]) : null) + '</dl>'
+        : '<p class="nota">Fora do recorte ambiental. Dados direto do DataJud.</p>';
+    }).catch(function () { var el = document.getElementById('ident-proc'); if (el) el.innerHTML = ''; });
+
+    // o Diário de Justiça Nacional aceita consulta direta do navegador; a API do Observatório fica de reserva
+    var digitos = numero.replace(/\D/g, '');
+    fetch('https://comunicaapi.pje.jus.br/api/v1/comunicacao?siglaTribunal=TJRO&numeroProcesso=' + digitos)
+      .then(function (r) { return r.ok ? r.json() : Promise.reject(); })
+      .then(function (j) {
+        return { publicacoes: (j.items || []).map(function (i) {
+          return { data: i.data_disponibilizacao, tipo: i.tipoComunicacao, documento: i.tipoDocumento, orgao: i.nomeOrgao, link: i.link || null, texto: String(i.texto || '').replace(/ /g, ' ').replace(/\s+/g, ' ').trim() };
+        }).sort(function (a, b) { return (b.data || '').localeCompare(a.data || ''); }) };
+      })
+      .catch(function () { return fetch('/api/v1/publicacoes/' + encodeURIComponent(numero)).then(function (r) { return r.ok ? r.json() : Promise.reject(); }); })
+      .then(function (j) {
+      var el = document.getElementById('publicacoes');
+      if (!el) return;
+      el.innerHTML = j.publicacoes.length ? j.publicacoes.map(function (pub) {
+        return '<article class="publicacao"><div class="publicacao-topo"><strong>' + esc(pub.documento || pub.tipo) + '</strong><span class="nota">' + esc(fmt(pub.data)) + '</span></div>' +
+          '<span class="nota">' + esc(pub.orgao) + (pub.tipo && pub.tipo !== pub.documento ? ', ' + esc(pub.tipo) : '') + '</span>' +
+          (pub.link ? '<p style="margin:4px 0 0"><a href="' + esc(pub.link) + '" target="_blank" rel="noopener">Abrir o documento no PJe</a></p>' : '') +
+          (pub.texto ? '<details><summary>Ler o texto publicado</summary><div class="texto-oficial">' + esc(pub.texto) + '</div></details>' : '') + '</article>';
+      }).join('') + '<p class="nota" style="margin-top:10px">Fonte: Diário de Justiça Eletrônico Nacional (CNJ).</p>'
+        : '<p class="nota">Sem publicações no Diário de Justiça Eletrônico Nacional. Atos antigos estão no site do TJRO.</p>';
+    }).catch(function () { var el = document.getElementById('publicacoes'); if (el) el.innerHTML = '<p class="nota">Diário de Justiça indisponível agora. Tente mais tarde.</p>'; });
+
+    fetch('/api/v1/processos/' + encodeURIComponent(numero)).then(function (r) { return r.ok ? r.json() : Promise.reject(); }).then(function (j) {
+      var el = document.getElementById('andamento-completo');
+      if (el) el.innerHTML = htmlAndamento(j.registros, true);
+    }).catch(function () { var el = document.getElementById('andamento-completo'); if (el) el.innerHTML = '<p class="nota">DataJud indisponível agora. Tente mais tarde.</p>'; });
+  }
+
+  // Radar Jurisprudencial
+  function htmlTramitacao(qtd) {
+    var P = DJ.panorama;
+    if (!P || !P.recentes) return semDataJud();
+    return '<ul class="tramitacao">' + P.recentes.slice(0, qtd || 15).map(function (p) {
+      var ult = p.movimentos[0];
+      var origem = comarcaDe(p.numero);
+      return '<li><div><a class="num" href="#/processos/' + esc(p.numero) + '">' + esc(p.numero) + '</a>' +
+        '<span class="meta">' + esc(p.classe) + ', ' + esc(p.orgao) + (origem ? ', origem ' + esc(origem) : '') + '</span>' +
+        '<span class="meta">' + esc(p.assuntos.join('; ')) + '</span></div>' +
+        '<div class="mov">' + (ult ? esc(ult.nome) + '<time>' + esc(fmt(ult.data)) + '</time>' : '') + '</div></li>';
+    }).join('') + '</ul><p class="nota" style="margin-top:10px">Fonte: API Pública do DataJud (CNJ), extração de ' + fmtMomento(P.extraidoEm) + '.</p>';
+  }
+
+  function telaRadar() {
+    var novas = D.fichas.slice().sort(porData);
+    var secoes = [['novas', 'Novas decisões'], ['tendencias', 'Tendências em análise'], ['metodo', 'Como identificamos uma tendência'], ['divergencias', 'Entendimentos e divergências'], ['precedentes', 'Precedentes relevantes'], ['tramitacao', 'Processos em tramitação'], ['boletins', 'Boletins']];
+
+    main.innerHTML =
+      faixa('Radar Jurisprudencial', 'Monitoramento e tendências jurisprudenciais: o que foi decidido está na ficha de cada acórdão; aqui ficam os padrões em observação.') +
+      '<div class="miolo"><div class="radar-grade">' +
+        '<ul class="radar-indice nao-imprimir">' + secoes.map(function (s) { return '<li><a href="#/radar/' + s[0] + '">' + s[1] + '</a></li>'; }).join('') + '</ul>' +
+        '<div>' +
+          '<section class="modulo" id="novas"><h2>Novas decisões</h2><p class="modulo-desc">Acórdãos do acervo, do mais recente para o mais antigo, com a data usada como referência.</p>' +
+            '<ul class="lista-decisoes">' + novas.map(itemDecisao).join('') + '</ul></section>' +
+
+          '<section class="modulo" id="tendencias"><h2>Tendências em análise</h2><p class="modulo-desc">Cada tendência informa amostra, órgãos e período, e recebe um grau de evidência. Nenhum tema chegou a entendimento sustentado.</p>' +
+            '<div class="escala">' + D.graus.map(function (g) { return '<div class="escala-passo grau-' + g.id + '"><strong>' + medidor(g.id) + esc(g.nome) + '</strong>' + esc(g.def) + '</div>'; }).join('') + '</div>' +
+            D.tendencias.map(function (t) {
+              return '<article class="tendencia grau-' + t.grau + '"><div class="tendencia-topo"><h3>' + esc(t.titulo) + '</h3><span class="tendencia-grau grau-' + t.grau + '">' + medidor(t.grau) + esc(grau(t.grau).nome) + '</span></div>' +
+                '<div class="tendencia-fatos"><span><b>Amostra:</b> ' + plural(t.fichas.length, 'ficha', 'fichas') + '</span><span><b>Órgãos:</b> ' + esc(t.orgaos) + '</span><span><b>Período:</b> ' + esc(t.periodo) + '</span></div>' +
+                '<p>' + esc(t.descricao) + '</p>' +
+                '<p style="font-size:14px">Fichas: ' + t.fichas.map(function (id) { var f = ficha(id); return '<a href="#/decisoes/' + id + '">' + esc(f.processo || f.titulo) + '</a>'; }).join('; ') + '</p>' +
+                '<div class="ressalva"><strong>Ressalvas.</strong> ' + esc(t.ressalvas) + '</div></article>';
+            }).join('') +
+          '</section>' +
+
+          '<section class="modulo" id="metodo"><h2>Como identificamos uma tendência</h2><p class="modulo-desc">Os cinco passos valem para qualquer tema antes de ele aparecer no Radar.</p>' +
+            '<ol class="passos">' +
+              '<li><strong>Delimitar</strong>Tema, intervalo, classe processual e órgãos julgadores.</li>' +
+              '<li><strong>Comparar</strong>Fundamentos, dispositivo, soluções e divergências.</li>' +
+              '<li><strong>Contextualizar</strong>Quantidade de decisões, fatos particulares e mudanças normativas.</li>' +
+              '<li><strong>Validar</strong>Revisão humana e fundamentação documental.</li>' +
+              '<li><strong>Publicar</strong>Resumo, metodologia, amostra e links dos julgados.</li>' +
+            '</ol><p class="regra"><strong>Regra de qualidade:</strong> frequência estatística não é sinônimo de orientação jurisprudencial consolidada. Toda tendência aparece com grau de evidência e ressalvas.</p>' +
+          '</section>' +
+
+          '<section class="modulo" id="divergencias"><h2>Entendimentos e divergências</h2><p class="modulo-desc">Decisões que apontam em sentidos diferentes sobre o mesmo problema, no próprio TJRO ou entre o TJRO e os tribunais superiores.</p>' +
+            D.divergencias.map(function (v) {
+              return '<article class="divergencia"><h3>' + esc(v.titulo) + '</h3><div class="lados">' +
+                v.lados.map(function (l) { return '<div class="lado"><strong>' + esc(l.quem) + '</strong>' + esc(l.texto) + (l.ficha ? ' <a href="#/decisoes/' + l.ficha + '">Ver ficha</a>' : '') + '</div>'; }).join('') +
+                '</div><p class="fontes-mini">Fontes: ' + v.fontes.map(function (s) { return '<a href="' + esc(s.url) + '" target="_blank" rel="noopener">' + esc(s.rotulo) + '</a>'; }).join(', ') + '.</p></article>';
+            }).join('') +
+          '</section>' +
+
+          '<section class="modulo" id="precedentes"><h2>Precedentes relevantes</h2><p class="modulo-desc">Ligações entre as decisões do TJRO e precedentes do STF e do STJ, indicando se o precedente foi invocado ou se a ligação é da pesquisa.</p>' +
+            '<table class="tabela"><thead><tr><th>Tribunal</th><th>Precedente</th><th>Relação com o acervo</th></tr></thead><tbody>' +
+            D.precedentes.map(function (p) {
+              return '<tr><td class="forte">' + esc(p.tribunal) + '</td><td><a href="' + esc(p.url) + '" target="_blank" rel="noopener">' + esc(p.ref) + '</a><br>' + esc(p.texto) + '</td><td>' + esc(p.relacao) +
+                (p.fichas.length ? '<br>' + p.fichas.map(function (id) { return '<a href="#/decisoes/' + id + '">' + esc(ficha(id).processo) + '</a>'; }).join(', ') : '') + '</td></tr>';
+            }).join('') + '</tbody></table>' +
+          '</section>' +
+
+          '<section class="modulo" id="tramitacao"><h2>Processos em tramitação</h2><p class="modulo-desc">Processos cíveis do 2º grau do TJRO com assuntos ambientais, pela movimentação mais recente registrada no DataJud. É a lista de triagem para novas fichas: os processos ainda não foram analisados.</p>' +
+            '<div id="tramitacao-lista">' + htmlTramitacao() + '</div></section>' +
+
+          '<section class="modulo" id="boletins"><h2>Boletins</h2>' +
+            '<div class="boletim-chamada"><div><h3>Panorama jurisprudencial</h3><p>Revisão realizada até novembro de 2026</p></div><a class="botao" href="#/radar/boletim">Ler o boletim</a></div>' +
+          '</section>' +
+        '</div>' +
+      '</div></div>';
+  }
+
+  function telaBoletim() {
+    var novas = D.fichas.slice().sort(porData);
+    var P = DJ.panorama;
+    main.innerHTML =
+      faixa('Panorama jurisprudencial', 'Revisão realizada até novembro de 2026.', '<a href="#/radar">Radar Jurisprudencial</a> / Boletins') +
+      '<div class="miolo"><article class="boletim">' +
+      '<p class="nao-imprimir"><button class="botao botao-claro" type="button" id="imprimir">Imprimir ou salvar em PDF</button></p>' +
+      '<h2>Abrangência e metodologia</h2><p>Acórdãos do TJRO sobre conflitos socioambientais, localizados em notícias institucionais e bases acadêmicas e conferidos na API Pública do DataJud. São ' + plural(D.fichas.length, 'decisão', 'decisões') + ' no acervo. As fichas distinguem fatos documentados, sínteses editoriais e inferências da pesquisa.' +
+        (P ? ' No mesmo período de referência, o DataJud registra ' + milhar(P.civeis) + ' processos cíveis com assunto ambiental no 2º grau do TJRO.' : '') + '</p>' +
+      '<h2>Novos acórdãos</h2><ul>' + novas.map(function (f) { return '<li>' + esc(f.titulo) + ' (' + esc([f.orgao, f.processo ? 'processo ' + f.processo : null].filter(Boolean).join(', ')) + ').</li>'; }).join('') + '</ul>' +
+      '<h2>Entendimentos em observação</h2><ul>' + D.tendencias.map(function (t) { return '<li>' + esc(t.titulo) + '. Grau de evidência: ' + esc(grau(t.grau).nome.toLowerCase()) + '; amostra de ' + plural(t.fichas.length, 'ficha', 'fichas') + '.</li>'; }).join('') + '</ul>' +
+      '<h2>Divergências</h2>' + D.divergencias.map(function (v) { return '<p><strong>' + esc(v.titulo) + '.</strong> ' + v.lados.map(function (l) { return esc(l.quem) + ': ' + esc(l.texto); }).join(' ') + '</p>'; }).join('') +
+      '<h2>Precedentes relevantes</h2><ul>' + D.precedentes.map(function (p) { return '<li>' + esc(p.tribunal) + ', ' + esc(p.ref) + '. ' + esc(p.relacao) + '</li>'; }).join('') + '</ul>' +
+      '<h2>Links às decisões</h2><p>Cada ficha está em <a href="#/decisoes">Decisões analisadas</a>, com as fontes usadas, o andamento no DataJud e o caminho para a consulta oficial do TJRO.</p>' +
+      '<h2>Limites da análise</h2><p>Repetição de decisões não significa jurisprudência consolidada. As fichas foram feitas a partir de notícias e bases públicas; o inteiro teor dos acórdãos não foi consultado. Nada aqui avalia se as decisões foram cumpridas.</p>' +
+      '</article></div>';
+    document.getElementById('imprimir').addEventListener('click', function () { window.print(); });
+  }
+
+  // Indicadores
+  function telaIndicadores() {
+    var F = D.fichas;
+    var P = DJ.panorama;
+    var anos = F.map(anoDe).filter(Boolean).sort();
+    var dimensoes = [
+      { rot: 'Distributiva', n: F.filter(function (f) { return f.justica.distribuicao; }).length },
+      { rot: 'Reconhecimento', n: F.filter(function (f) { return f.justica.reconhecimento; }).length },
+      { rot: 'Participação', n: F.filter(function (f) { return f.justica.participacao; }).length }
+    ];
+
+    var panorama = P ?
+      '<div class="destaques">' +
+        '<div><b>' + milhar(P.civeis) + '</b><span>processos cíveis</span></div>' +
+        '<div><b>' + milhar(P.criminais) + '</b><span>processos criminais</span></div>' +
+        '<div><b>' + milhar(P.total) + '</b><span>total no 2º grau</span></div>' +
+      '</div>' +
+      '<div class="recorte"><span><b>Fonte:</b> ' + esc(P.fonte) + '</span><span><b>Extração:</b> ' + fmtMomento(P.extraidoEm) + '</span><span><b>Recorte:</b> 2º grau do TJRO, processos cíveis</span><span><a href="#/indicadores/criterios">Ver critérios</a></span></div>' +
+      '<div class="paineis">' +
+        painel('Classe processual', '', P.porClasse.slice(0, 8)) +
+        painel('Assuntos mais frequentes', 'Um processo pode ter mais de um assunto.', P.porAssunto.slice(0, 12)) +
+        painel('Ano de chegada ao 2º grau', '', P.porAno) +
+        painel('Comarca de origem', 'Onde o processo começou. As 15 maiores.', P.porComarca.slice(0, 15)) +
+        (P.porResultado ? painel('Resultado do último julgamento', 'Último resultado registrado, entre ' + milhar(P.julgados) + ' processos julgados.', P.porResultado.slice(0, 10).map(function (x) { return { rot: rotRes(x.rot), n: x.n }; })) : '') +
+      '</div>' : semDataJud();
+
+    main.innerHTML =
+      faixa('Indicadores', 'Números do TJRO e do acervo analisado.') +
+      '<div class="miolo">' +
+        '<section class="secao secao-processos" id="panorama"><p class="mapa-conta conta-processos">Conta processos do DataJud</p><div class="secao-cabeca"><h2>Panorama do TJRO</h2><p>Processos do 2º grau com assunto ambiental</p></div>' + panorama + '</section>' +
+
+        '<section class="secao secao-acervo" id="acervo"><p class="mapa-conta conta-decisoes">Conta decisões analisadas pela pesquisa</p><div class="secao-cabeca"><h2>Acervo analisado</h2><p>Decisões com ficha no Observatório</p></div>' +
+          '<div class="recorte"><span><b>Amostra:</b> ' + plural(F.length, 'decisão', 'decisões') + '</span><span><b>Período:</b> ' + anos[0] + ' a ' + anos[anos.length - 1] + '</span><span><b>Atualização:</b> ' + D.atualizadoEm + '</span></div>' +
+          '<div class="paineis">' +
+            painel('Decisões por eixo temático', 'Uma decisão pode ter mais de um eixo.', D.eixos.map(function (e) { return { rot: e.curto, n: F.filter(function (f) { return f.eixos.indexOf(e.id) > -1; }).length }; })) +
+            painel('Órgão julgador', '', contar(F, function (f) { return f.orgao || 'Não informado na fonte'; })) +
+            painel('Resultado', '', contar(F, function (f) { return f.resultado; })) +
+            painel('Ano de referência', '', contar(F, anoDe).sort(function (a, b) { return a.rot.localeCompare(b.rot); })) +
+            painel('Fundamentos normativos mais citados', '', contar(F, function (f) { return f.normas; }).slice(0, 8)) +
+            painel('Dimensões de justiça socioambiental', 'Leitura da pesquisa.', dimensoes) +
+          '</div>' +
+        '</section>' +
+
+        '<section class="secao texto" id="criterios"><div class="secao-cabeca"><h2>Critérios</h2></div>' +
+          '<p><strong>Panorama do TJRO.</strong> ' + esc(P ? P.criterio : 'Consulta à API Pública do DataJud por assuntos ambientais da Tabela Processual Unificada.') + ' Processos criminais ficam fora do recorte. A comarca de origem vem do número do processo. Os números mudam a cada atualização.</p>' +
+          '<p><strong>Acervo analisado.</strong> Uma ficha por decisão, com fontes. As dimensões de justiça são leitura da pesquisa.</p>' +
+          '<p><strong>Leitura.</strong> Frequência não é jurisprudência consolidada.</p>' +
+        '</section>' +
+      '</div>';
   }
 
   // Temas e Territórios
