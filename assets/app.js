@@ -1110,6 +1110,31 @@
     main.focus({ preventScroll: true });
   }
 
+  // títulos de página e de seção com iniciais maiúsculas (artigos, preposições e conjunções ficam em minúscula)
+  var MINUSCULAS = ['a', 'à', 'ao', 'aos', 'as', 'às', 'com', 'da', 'das', 'de', 'do', 'dos', 'e', 'em', 'entre', 'na', 'nas', 'no', 'nos', 'o', 'os', 'ou', 'para', 'pela', 'pelas', 'pelo', 'pelos', 'por', 'sem', 'sobre', 'um', 'uma'];
+  function iniciais(texto, inicio) {
+    var primeira = inicio;
+    return texto.replace(/[A-Za-zÀ-ÖØ-öø-ÿ0-9º]+/g, function (p) {
+      var ehPrimeira = primeira; primeira = false;
+      if (!ehPrimeira && MINUSCULAS.indexOf(p.toLowerCase()) > -1) return p.toLowerCase();
+      return p.charAt(0).toUpperCase() + p.slice(1);
+    });
+  }
+  function aplicarIniciais() {
+    [].forEach.call(main.querySelectorAll('h1, h2, h3.mapa-titulo'), function (h) {
+      var inicio = true;
+      var w = document.createTreeWalker(h, NodeFilter.SHOW_TEXT);
+      var n;
+      while ((n = w.nextNode())) {
+        if (!/\S/.test(n.nodeValue)) continue;
+        var novo = iniciais(n.nodeValue, inicio);
+        if (novo !== n.nodeValue) n.nodeValue = novo;
+        inicio = false;
+      }
+    });
+  }
+  new MutationObserver(aplicarIniciais).observe(main, { childList: true, subtree: true });
+
   // submenu de Temas a partir dos eixos
   document.getElementById('sub-temas').innerHTML = '<li><a href="#/temas">Mapas: origem do processo e local do conflito</a></li>' +
     '<li class="sub-rotulo">Eixos temáticos da pesquisa</li>' +
