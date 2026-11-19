@@ -273,12 +273,12 @@
 
       '<div class="miolo">' +
         '<section class="secao obs-secao"><h2 class="obs-titulo">O Observatório</h2>' +
-          '<p class="obs-texto">Plataforma pública de pesquisa do DHJUS/UNIR sobre conflitos socioambientais julgados pelo Tribunal de Justiça de Rondônia.</p>' +
+          '<p class="obs-texto">O Observatório da Justiça Socioambiental na Amazônia é uma plataforma pública de pesquisa do DHJUS/UNIR. Reúne e organiza decisões do Tribunal de Justiça de Rondônia sobre conflitos socioambientais, com os territórios envolvidos, os direitos em disputa e a fonte de cada informação.</p>' +
           '<p class="obs-mais"><a href="#/sobre">Apresentação completa</a></p>' +
           '<div class="sobre-resumo">' +
             '<div><h3>O que analisamos</h3><p>Acórdãos cíveis do TJRO sobre conflitos socioambientais.</p></div>' +
             '<div><h3>Como analisamos</h3><p>Em fichas, com critérios definidos e fontes indicadas.</p></div>' +
-            '<div><h3>Por que isso importa</h3><p>Mostra como a Justiça responde a esses conflitos.</p></div>' +
+            '<div><h3>Por que isso importa</h3><p>Permite entender como a Justiça responde a esses conflitos em Rondônia.</p></div>' +
           '</div>' +
         '</section>' +
 
