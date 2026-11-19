@@ -694,3 +694,4 @@ a.selo-eixo:hover { color: var(--mata); text-decoration: none; background: var(-
 
 /* estágio de conferência de cada ficha */
 .ficha-estagio { font-size: 14px; line-height: 1.55; background: var(--barranco-claro); border-left: 3px solid var(--barranco); padding: 10px 14px; margin: 0 0 18px; color: #4a3413; }
+.destaques-dois { grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 640px; }

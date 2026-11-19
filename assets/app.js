@@ -259,7 +259,7 @@
   }
   function telaPauta() {
     main.innerHTML =
-      faixa('Em pauta', 'Notícias sobre conflitos e justiça socioambiental na Amazônia, com data, fonte e link para a matéria original.', '<a href="#/radar">Radar Jurisprudencial</a> / Em pauta') +
+      faixa('Em pauta', 'Notícias sobre conflitos e justiça socioambiental na Amazônia, com data, fonte e link para a matéria original.', '<a href="#/temas">Conflitos e territórios</a> / Em pauta') +
       '<div class="miolo"><div class="pauta-grade">' + pauta().map(itemPauta).join('') + '</div>' +
       '<p class="nota" style="margin-top:18px">Resumos do Observatório. A matéria completa está na fonte.</p></div>';
   }
@@ -820,7 +820,7 @@
     ];
 
     var panorama = P ?
-      '<div class="destaques">' +
+      '<div class="destaques destaques-dois">' +
         '<div><b>' + milhar(P.civeis) + '</b><span>processos cíveis com assunto ambiental (universo de busca)</span></div>' +
         (P.julgados != null ? '<div><b>' + milhar(P.julgados) + '</b><span>com julgamento registrado no DataJud</span></div>' : '') +
       '</div>' +
