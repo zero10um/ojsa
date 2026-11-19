@@ -278,7 +278,7 @@
           '<div class="sobre-resumo">' +
             '<div><h3>O que analisamos</h3><p>Acórdãos cíveis do TJRO sobre conflitos socioambientais.</p></div>' +
             '<div><h3>Como analisamos</h3><p>Em fichas, com critérios definidos e fontes indicadas.</p></div>' +
-            '<div><h3>Por que isso importa</h3><p>Permite entender como a Justiça responde a esses conflitos em Rondônia.</p></div>' +
+            '<div><h3>Por que isso importa</h3><p>Permite entender como a Justiça responde a esses conflitos em Rondônia e oferece subsídios para a governança socioambiental.</p></div>' +
           '</div>' +
         '</section>' +
 
