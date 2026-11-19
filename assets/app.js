@@ -228,13 +228,13 @@
 
   function blocoMapas(comBarras) {
     var P = DJ.panorama;
-    return '<p class="mapas-explica">Os mapas oferecem duas perspectivas: onde os processos começaram e quais locais estão relacionados aos casos apresentados nas fichas. Cada mapa tem sua própria contagem.</p>' +
+    return '<p class="mapas-explica">Os mapas oferecem duas perspectivas: onde os processos começaram e quais locais estão relacionados aos casos apresentados nas fichas.</p>' +
       '<div class="mapas-lado">' +
         (P ? '<div class="mapa-bloco"><h3 class="mapa-titulo titulo-comarca">Processos por comarca de origem</h3>' +
-          '<p class="mapa-porque">Processos cíveis de segundo grau do TJRO com assuntos ambientais selecionados no DataJud, organizados pela sede da comarca de origem. A comarca indica onde o processo começou; o conflito pode ter ocorrido em outro local.</p>' + mapa('datajud') +
+          mapa('datajud') +
           (comBarras ? '<h4>Comarcas de origem com mais processos</h4>' + barras(P.porComarca.slice(0, 6)) : '') + '</div>' : '') +
         '<div class="mapa-bloco"><h3 class="mapa-titulo titulo-impacto">Fichas por local do conflito</h3>' +
-          '<p class="mapa-porque">Fichas do Observatório organizadas pelo município associado ao conflito nas fontes consultadas. Os números indicam fichas, não conflitos distintos. As fontes e os limites da documentação estão indicados em cada ficha.</p>' + mapa('fichas') +
+          mapa('fichas') +
           (comBarras ? '<h4>Fichas por município</h4><div class="barras-terra">' + barras(contar(D.fichas, function (f) { return f.municipio ? f.municipio.nome : 'Abrangência estadual'; })) + '</div>' : '') + '</div>' +
       '</div>';
   }
